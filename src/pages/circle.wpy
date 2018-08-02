@@ -1,0 +1,433 @@
+<style lang="less" scoped>
+.circle-container{
+  .notice{
+    background-color: #ffffff;
+    width:98%;
+    margin: 10rpx auto;
+    .content{
+      font-size:28rpx;
+      color:gray;
+      overflow: hidden;
+      text-overflow:ellipsis;
+      white-space: nowrap;
+      i{
+        font-size:28rpx;
+        color:orange;
+        margin-left: 12rpx;
+      }
+    }
+    .notice-hover{
+      background-color: #ebe7e7;
+      font-weight: bold;
+    }
+  }
+  .list-box{
+    .item{
+      width:95%;
+      margin: 20rpx auto;
+      border:2rpx solid #ffffff;
+      background-color: #ffffff;
+      border-radius: 6rpx;
+      box-shadow: 10rpx 10rpx 5rpx #CCCCCC;
+      .header{
+        height: 90rpx;
+        margin:5rpx 5rpx;
+        display: flex; 
+        image{
+          height: 90rpx;
+          width: 90rpx;
+        }
+        .header-info{
+          margin-left: 20rpx;
+          display: flex;
+          flex-direction: column;
+          justify-content: space-between;
+          .nickname{
+            font-size:24rpx;
+            color:orange;
+          }
+          .time{
+            font-size:20rpx;
+            color:#336666;
+            i{
+              color:#cccccc;
+              font-size:20rpx;
+              margin-right: 6rpx;
+            }
+          }
+          .views{
+            font-size:20rpx;
+            color:#cccccc;
+            i{
+              color:#cccccc;
+              font-size:20rpx;
+              margin-right: 6rpx;
+            }
+          }
+
+        }
+      }
+      .body{
+        margin: 5rpx 5rpx 0 5rpx;
+        .article{
+          overflow: hidden;
+          text-overflow: ellipsis;
+          display: -webkit-box;
+          -webkit-line-clamp:3;
+          -webkit-box-orient: vertical;
+          font-size:24rpx;
+          text-indent: 2em;
+          margin: 0 10rpx;
+        }
+        .pic-group{
+          position: relative;
+          .pic-box{
+            height: 180rpx;
+            display: flex;
+            .pic{
+              flex:1;
+              padding:5rpx 5rpx;
+              image{
+                width: 100%;
+                height: 100%;
+              }
+            }
+          }
+          .number{
+            position: absolute;
+            bottom:0;
+            right: 0;
+            font-size:14pt;
+            border-radius: 16rpx;
+            background-color:rgb(193, 196, 193);
+            padding:10rpx;
+            opacity: 0.6;
+          }
+          
+        }
+        .location{
+          margin: 5rpx 5rpx 0 5rpx;
+          font-size:20rpx;
+          color:#99CCFF;
+          i{
+            color:orange;
+            font-size:20rpx;
+            margin-right: 6rpx;
+          }
+
+        }
+      }
+      .footer{
+        height: 50rpx;
+        width: 96%;
+        margin: 0 auto;
+        display: flex;
+        justify-content: space-between;
+        border-top:2rpx solid rgb(240, 237, 237);
+        .zan,.liuyan{
+          text-align: center;
+          flex: 1;
+          color:#778899;
+          font-size:26rpx;
+          i{
+            font-size:30rpx;
+            color:#888888;
+          }
+        }
+        .zan{
+          border-right:2rpx solid rgb(240, 237, 237);
+        }
+      }
+    /***::before**/
+      position: relative;
+      .ribbon-wrapper{
+          font-size:8pt;
+          display:inline-block;
+          width:80rpx;
+          height:30rpx;
+          background:#3e3e3e;
+          text-align:center;
+          font-weight:bold;
+          background-color:#43BD28;
+          background-image: -webkit-linear-gradient(top, #43BD28, #2F821B);
+          background-image: -moz-linear-gradient(top,#43BD28, #2F821B);
+          background-image: -o-linear-gradient(top,#43BD28, #2F821B);
+          background-image: linear-gradient(top,#43BD28, #2F821B);
+          box-shadow: 0px 0px 0px rgba(0,0,0,0.2),inset 0px 0px 0px rgba(255,255,255,0.11);
+          transform: rotate(45deg);
+          position:absolute;
+          top:16rpx;
+          right:-10rpx;
+          border-top-left-radius: 36rpx;
+          border-top-right-radius: 36rpx;
+      }
+    /***::before**/
+    }
+    .loading{
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      image{
+        width: 72rpx;
+        height: 72rpx;
+      }
+      .tip{
+        font-size:12pt;
+        color:#888888;
+        margin-left: 10rpx;
+      }
+    }
+  }
+
+  .touch-hover{
+    background-color: #cccccc;
+    opacity: 0.6;
+  }
+}
+</style>
+<template>
+  <view class="circle-container">
+    <view class="notice">
+      <navigator open-type="navigate" url="/pages/post" hover-class="notice-hover">
+        <view class="content">
+          <i class="iconfont icon-gonggaoxiaoxi-"></i>
+          信阳365服务 发布端的一些常见问题及咨询发发布端的一些常见问题及咨询发发布端的一些常见问题及咨询发发布端的一些常见问题及咨询发
+        </view>
+      </navigator>
+    </view>
+    <view class="list-box">
+      <block wx:for="{{articleConfig.list}}" wx:key="{{index}}">
+        <view class="item {{item.top === '1' ? 'animated shake' : ''}}" @tap.stop="selectTA('{{item}}','{{index}}')">
+          <view class="header">
+            <image lazy-load="true" src="{{item.avatar}}"/>
+            <view class="header-info">
+              <view class="nickname">{{item.author}}</view>
+              <view class="views">
+                <i class="iconfont icon-zixun-liulanliang"/>{{item.views}} 浏览
+              </view>
+              <view class="time">
+                <i class="iconfont icon-shijian-huise"/>{{item.createTime}}
+              </view>
+            </view>
+          </view>
+          <view class="body">
+            <view class="article">
+              {{item.content}}
+            </view>
+            <view class="pic-group" wx:if="{{item.pictures !== null}}">
+              <view class="pic-box">
+                <block wx:for="{{item.pictures}}" wx:for-item="pic" wx:for-index="idx"  wx:key="{{idx}}">  
+                  <view class="pic" wx:if="{{idx <= 3}}"   @tap.stop="previewImage('{{pic}}','{{index}}')">
+                    <image lazy-load="true" mode="aspectFit" src="{{pic}}"/>
+                  </view>
+                </block>
+              </view>
+              <view class="number" @tap.stop="previewImage('{{item.pictures[0]}}','{{index}}')"   wx:if="{{item.pictures.length > 4}}">{{item.pictures.length }} 张</view>
+            </view>
+            <view class="location">
+              <i class="iconfont icon-dizhi1"/>{{item.location}}
+            </view>
+          </view>
+          <view class="footer">
+            <view class="zan">
+              <i class="iconfont icon-pinglun"/>
+              <text wx:if="{{item.commentsNumber === 0}}"> 评论</text>
+              <text wx:else>{{item.commentsNumber}}</text>
+            </view>
+
+            <view class=" liuyan" @tap.stop="fabulous('{{item}}','{{index}}')" hover-class="touch-hover" style="{{item.isFabulous === true ? 'color:orange' : ''}}">
+              <i class="iconfont icon-zan" style="{{item.isFabulous === true ? 'color:orange' : ''}}"/> 
+              <text wx:if="{{item.fabulous === 0}}"> 点赞</text>
+              <text wx:else>{{item.fabulous}}</text>
+            </view>
+          </view>
+          <!--
+            -->
+            <view class="ribbon-wrapper" wx:if="{{item.top === '1'}}">
+              顶置
+            </view>
+          <!--
+            -->
+        </view>
+      </block>
+      <view class="loading">
+        <image src="/assets/images/runloading.png" wx:if="{{articleConfig.loading.hasMore === true}}"/>
+        <view class="tip">{{articleConfig.loading.tip}}</view>
+      </view>
+
+    </view>
+
+    <postLink position="bottom:8%;right:10rpx;" url="/pages/post" icon="/assets/images/xy-write.png"></postLink>
+  </view>
+</template>
+
+<script>
+  import wepy from 'wepy'
+  import req from '@/network'
+  import PostLink from '@/components/postLink'
+  import { baseUrl } from '@/config/index'
+
+  export default class Circle extends wepy.page {
+    config = {
+      enablePullDownRefresh: true,
+      backgroundTextStyle: 'dark'
+    }
+
+    data = {
+      articleConfig:{
+        loading:{
+          hasMore: true,
+          tip: '疾跑加载中...'
+        },
+        page:{
+          index: 0,
+          size: 6
+        },
+        list:[]
+      }
+    }
+
+    onShow () {
+      
+      // 检查是否有更新过后需要刷新的数据没【实现自动刷新】
+      
+      let needRefresh = wx.getStorageSync('posted')
+
+      if(needRefresh === '1') {
+
+        wx.showNavigationBarLoading()
+        this.initArticle()
+
+        wx.removeStorageSync("posted")
+
+        setTimeout(() => {
+          wx.hideNavigationBarLoading()
+        }, 1000);
+
+      }
+
+
+    }
+
+    onLoad() {
+      // 初始化数据
+      this.initArticle()
+    }
+
+    methods = {
+      previewImage(pic,index) {
+
+        wx.previewImage({
+          current: pic,
+          urls: this.articleConfig.list[index].pictures
+        })
+
+      },
+      selectTA(item,index) {
+
+        // 事实处理浏览次数
+        this.articleConfig.list[index].views += 1
+
+        req.post(baseUrl+"article/views?articleId="+item.articleId).then(res => {
+        })
+
+        //页面跳转
+        this.$preload("article",this.articleConfig.list[index])
+        this.$navigate("./circle-detail")
+
+      },
+      fabulous(item,index) {
+
+        let isFabulous = wx.getStorageSync("F_"+item.articleId)
+        if(!isFabulous){
+          // 事实处理浏览次数
+          this.articleConfig.list[index].fabulous += 1
+          wx.setStorageSync("F_"+item.articleId,item.fabulous + 1)
+          req.post(baseUrl+"article/fabulous?articleId="+item.articleId).then(res => {
+          })
+        }else{
+          // 事实处理浏览次数
+          this.articleConfig.list[index].fabulous -= 1
+          this.articleConfig.list[index].isFabulous = false
+          wx.removeStorageSync("F_"+item.articleId)
+          req.post(baseUrl+"article/unfabulous?articleId="+item.articleId).then(res => {
+          })
+
+        }
+
+      }
+    }
+
+    initArticle(){
+
+      this.articleConfig.page.index = 0
+
+      req.get(baseUrl+'article/list',{
+        page: 0,
+        size: this.articleConfig.page.size
+      }).then(res => {
+        wx.hideLoading()
+        wx.hideNavigationBarLoading()
+        wx.stopPullDownRefresh()
+        if(res.code === 0){
+          this.articleConfig.list = res.data.list
+          this.articleConfig.loading.hasMore = res.data.hasNext
+          this.articleConfig.loading.tip = res.data.hasNext ? '疾跑加载中...' : '没有更多说说啦~'
+          this.$apply()
+        }
+
+      })
+    }
+
+    nextArticle(){
+      if( !this.articleConfig.loading.hasMore){
+        return
+      }
+      wx.showNavigationBarLoading()
+      req.get(baseUrl+'article/list',{
+        page: ++ this.articleConfig.page.index,
+        size: this.articleConfig.page.size
+      }).then(res => {
+        wx.hideNavigationBarLoading()
+        if(res.code === 0){
+          this.articleConfig.list = this.articleConfig.list.concat(res.data.list)
+          this.articleConfig.loading.hasMore = res.data.hasNext
+          this.articleConfig.loading.tip = res.data.hasNext ? '疾跑加载中...' : '没有更多说说啦~'
+          this.$apply()
+        }
+      })
+    }
+
+    onPullDownRefresh() {
+      wx.showNavigationBarLoading()
+        wx.showLoading({
+            title: '加载中',
+        })
+
+      this.initArticle()
+
+      
+    }
+
+    computed ={
+      isFabulous() {
+        return this.articleConfig.list.map(e=>{
+          let isFabulous = wx.getStorageSync("F_"+e.articleId)
+          if(isFabulous) {
+            e.isFabulous = true
+          }
+          return e
+        })
+      }
+    }
+
+    onReachBottom() {
+      // more article
+      this.nextArticle()
+    }
+
+    components = {
+      postLink: PostLink
+    }
+  }
+</script>

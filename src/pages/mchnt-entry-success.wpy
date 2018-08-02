@@ -1,0 +1,55 @@
+<style lang="less" scoped>
+.post-result-container{
+  background-color: #ffffff;
+  height: 100%;
+  .content{
+    padding-top: 20%;
+    text-align: center;
+    height: 50%;
+    .info{
+      font-size:32rpx;
+    }
+    .link-info{
+      margin-top: 20rpx; 
+      font-size:28rpx;
+      color:rgb(62, 134, 194);
+    }
+  }
+}
+</style>
+<template>
+  <view class="post-result-container">
+    <view class="content">
+      <icon type="success" size="100"/>
+      <view class="info">提交入住信息成功！我们在一个工作日内审核。</view>
+      <view class="link-info">
+        <navigator url="/pages/mchnt" open-type="switchTab">商户服务</navigator>
+      </view>
+      <view class="link-info">个人中心</view>
+    </view>
+  </view>
+</template>
+
+<script>
+  import wepy from 'wepy'
+  import Toast from 'wepy-com-toast'
+  import req from '@/network'
+
+  export default class MchntEntrySuccess extends wepy.page {
+
+    data = {
+
+    }
+
+    onLoad() {
+      
+    }
+
+    
+
+    methods =  {
+      
+    }
+
+  }
+</script>

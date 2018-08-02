@@ -1,0 +1,13 @@
+{
+  "description": "wepy_xcx",
+  "setting": {
+    "urlCheck": true,
+    "es6": false,
+    "postcss": false,
+    "minified": false
+  },
+  "compileType": "miniprogram",
+  "appid": "wx886da5540ca9dba4",
+  "projectname": "wepy_xcx",
+  "miniprogramRoot": "./dist"
+}

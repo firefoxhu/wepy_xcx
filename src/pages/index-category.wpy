@@ -1,0 +1,201 @@
+<style lang="less" scoped>
+.index-category-container{
+  margin: 0 12rpx;
+  .category-list{
+    display: flex;
+    flex-direction: column;
+
+    .item{
+      border-radius: 16rpx;
+      margin: 6rpx 0;
+      padding:6rpx 6rpx;
+      display: flex;
+      flex-direction: row;
+      background-color: #ffffff;
+      .icon{
+        width: 260rpx;
+        height: 160rpx;
+      }
+      .content{
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        flex: 1;
+        padding-left:10rpx;
+        .title{
+          font-size:28rpx;
+        }
+        .info{
+          display: flex;
+          justify-content: space-between;
+          .fabulous,.views,.source{
+            text{
+              font-size:20rpx;
+              color:rgb(122, 119, 83);
+            }
+            i{
+              font-size: 26rpx;
+              margin-left: 4rpx;
+            }
+          }
+        }
+      }
+    }
+  }
+  .loading{
+    text-align: center;
+    font-size:12px;
+    color:#aaa;
+  }
+}
+</style>
+<template>
+  <view class="index-category-container">
+    <view class="category-list">
+        <view class="item" data-index="{{index}}" @tap.stop="selectArticle('{{item}}')" wx:for="{{categoryConfig.list}}" wx:key="{{index}}">
+          <image  @tap.stop="previewImage('{{item.images[0]}}')" 
+            class="icon" lazy-load="true" src="{{item.images[0]}}" />
+          <view class="content">
+            <text class="title">{{item.title}}</text>
+            <view class="info">
+              <view class="source"><text>{{item.resource}}</text></view>
+              <view class="views">
+                <text>{{item.views}}</text>
+                <i class="iconfont icon-zixun-liulanliang"></i>
+              </view>
+              <view class="fabulous">
+                <text>{{item.fabulous}}</text>
+                <i class="iconfont icon-zan"></i>
+              </view>  
+            </view>
+          </view>
+        </view>
+        <view class="loading">
+          <text>{{categoryConfig.loading.tip}}</text>
+        </view>
+      </view>
+  </view>
+</template>
+
+<script>
+  import wepy from 'wepy'
+  import req from '@/network'
+  import { baseUrl2 } from '@/config/index'
+
+  export default class Category extends wepy.page {
+
+    
+    config = {
+      navigationBarTitleText: '资讯分类',
+      enablePullDownRefresh: true
+    }
+
+    data = {
+      categoryConfig: {
+        page:{
+          index: 0,
+          size: 8
+        },
+        loading: {
+          hasMore: true,
+          tip: '数据加载中...'
+        },
+        list:null
+      }
+    }
+
+    methods = {
+      selectArticle(item) {
+        this.$preload("article",item)
+        this.$navigate("./index-article-detail")
+
+        // 异步请求 浏览+1
+        req.get(baseUrl2+"news/views",{id:item.id}).then(res => {
+          if( res.code === 0)
+            wx.setStorage({
+              key:"V"+item.id,
+              data:"mark"
+            })
+        })
+      },
+      previewImage(pic) {
+        wx.previewImage({
+          current: '',
+          urls: [pic]
+        })
+      }
+    }
+
+    onPullDownRefresh() {
+      req.get(baseUrl2+'news/category',{page:0,size:this.categoryConfig.page.size,typeId:this.category.id}).then(res => {
+        if(res.code === 0) {
+          // init
+          this.categoryConfig.list = res.data.list
+          this.categoryConfig.loading.hasMore = res.data.hasNext
+          this.categoryConfig.loading.tip = res.data.list.length === 0 ? '暂无数据~' : (res.data.hasNext ? '数据加载中...' : '没有更多数据了~')
+          // reinit index
+          this.categoryConfig.page.index = 0
+          this.$apply()
+        }
+         wx.stopPullDownRefresh()
+      })
+    }
+
+    onReachBottom() {
+      // more 
+      this.articleNext()
+    }
+
+    onLoad (params, data) {
+      // 分享入口 
+      if(data.from === undefined) {
+        // 通过分享进入 加载数据
+        return
+      }else {
+        // fetch cache data 
+        this.category = data.preload.category
+      }
+
+      wx.setNavigationBarTitle({
+        title: '分类 > ' + this.category.title
+      })
+
+      // init category article  data 
+      this.initArticle()
+    }
+
+    onShareAppMessage(options) {
+      return {
+          title: '信阳365',
+          path: '/pages/index'
+      }
+    }
+
+    initArticle() {
+      req.get(baseUrl2+'news/category',{page:0,size:this.categoryConfig.page.size,typeId:this.category.id}).then(res => {
+        if(res.code === 0) {
+          // init
+          this.categoryConfig.list = res.data.list
+          this.categoryConfig.loading.hasMore = res.data.hasNext
+          this.categoryConfig.loading.tip = res.data.list.length === 0 ? '暂无数据~' : (res.data.hasNext ? '数据加载中...' : '没有更多数据了~')
+          this.$apply()
+        }
+      })
+    }
+
+    articleNext() {
+      if(!this.categoryConfig.loading.hasMore){
+        return
+      }
+      req.get(baseUrl2+'news/category',{page:++this.categoryConfig.page.index,size:this.categoryConfig.page.size,typeId:this.category.id}).then(res => {
+        if(res.code === 0) {
+          // init
+          this.categoryConfig.list = this.categoryConfig.list.concat(res.data.list)
+          this.categoryConfig.loading.hasMore = res.data.hasNext
+          this.categoryConfig.loading.tip = res.data.list.length === 0 ? '暂无数据~' : (res.data.hasNext ? '数据加载中...' : '没有更多数据了~')
+          this.$apply()
+        }
+      })
+    }
+  }
+</script>

@@ -1,0 +1,144 @@
+<style lang="less" scoped>
+.user-center-mchnt-list-eidt-servicecontent-container{
+    .cell-skill{
+        padding:10rpx;
+        background-color: #ffffff;
+        .label{
+            padding-right:10rpx;
+            font-size:34rpx;
+            height: 64rpx;
+        }
+        .textarea{
+            flex: 1;
+            border-radius: 8rpx;
+            textarea{
+                margin: 0 auto;
+                padding: 6rpx;
+                border-radius: 10rpx;
+                border:1px solid #eceaea;
+                height: 300rpx;
+                width: 95%;
+                
+            }
+            .count{
+                text-align: right;
+                font-size: 28rpx;
+                padding: 10rpx 20rpx 0 20rpx;
+            }
+        }
+    }
+    .btn{
+        margin: 10rpx 0;
+    }
+    .info{
+        font-size:28rpx;
+        color:orange;
+        margin: 10rpx;
+    }
+}
+</style>
+<template>
+  <view class="user-center-mchnt-list-eidt-servicecontent-container">
+       <view class="cell-skill">
+            <view class="label">
+                商户经营内容
+            </view>
+            <view class="textarea">
+                <textarea bindblur="tapBlurCheckSkill" bindinput="tapInputSkill" maxlength="256" placeholder="请输入您的门店主要业务/服务"/>
+                <view class="count">{{skillCount}}/256</view>
+            </view>
+        </view>
+        <button class="btn" type="primary" @tap="eidtSkill">确定修改</button>
+        <view class="info">
+            您的经营内容一定要简短明了，一句话能让别人明白您所覆盖的业务。
+        </view>
+  </view>
+</template>
+
+<script>
+  import wepy from 'wepy'
+import req from '@/network'
+import { baseUrl } from '@/config/index'
+  export default class UserCenterMchntListEditServicecontent extends wepy.page {
+
+    data = {
+        skillCount:0,
+        skillDescription: ''
+
+    }
+
+    onLoad() {
+      
+    }
+
+    
+
+    methods =  {
+        eidtSkill(){
+
+            wx.showLoading({
+                title: '请求中...',
+            })
+            wx.showNavigationBarLoading()
+            req.post(baseUrl+"shopInfo/updateShopInfo",{
+                skillDescription: this.skillDescription
+            }).then(res => {
+                wx.hideLoading()
+                wx.hideNavigationBarLoading()
+               
+                if(res.code === 0) {
+
+                    wx.showToast({
+                        title: '成功',
+                        icon: 'success',
+                        duration: 1000
+                    })
+                    
+                    setTimeout(() => {
+                        wx.showModal({
+                            title: '提示',
+                            content: '点击确定返回到【用户中心】',
+                            success: function(res) {
+                                if (res.confirm) {
+                                    wx.switchTab({
+                                        url: './user-center'
+                                    })
+                                } else if (res.cancel) {
+
+                                }
+                            }
+                        })
+                    }, 1000);
+
+                }else{
+                    wx.showToast({
+                        title: '不支持表情符号！',
+                        icon: 'none'
+                    })
+                }
+
+            })
+            
+        },
+        tapInputSkill(e){
+            if(e.detail.value.length <= 256){
+                this.skillCount = e.detail.value.length
+                this.skillDescription = e.detail.value
+            }
+        },
+        tapBlurCheckSkill(e){
+            let value = e.detail.value
+            if(value.length === 0) {
+                wx.showToast({
+                    title: '这个描述非常重要，用户只有看到你的描述才知道你的服务是什么！',
+                    icon: 'none',
+                    duration: 3000
+                })
+                return
+            }
+        }
+      
+    }
+
+  }
+</script>

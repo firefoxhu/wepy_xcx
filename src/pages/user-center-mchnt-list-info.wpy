@@ -1,0 +1,200 @@
+<style lang="less" scoped>
+.user-center-mchnt-list-info-container{
+    background-color: #ffffff;
+    .panel{
+        border-radius: 8rpx;
+        box-shadow: 4rpx 4rpx 6rpx 2rpx rgb(221, 222, 223);
+        .cell-address{
+            .label{
+                width:160rpx;
+                font-weight: 600;
+            }
+            margin: 10rpx;
+            .content{
+                text-indent: 1em;
+            }
+        }
+        .label{
+            width:160rpx;
+            font-weight: 600;
+        }
+        .edit{
+            height: 60rpx;
+            line-height: 60rpx;
+            font-size:32rpx;
+            color:#c8c8c8;
+            text-align: center;
+            text-decoration: underline;
+            line-height: 100rpx;
+        }
+        .edit:active{
+            opacity: 0.6;
+            color:orange;
+        }
+        .cell{
+            height: 100rpx;
+            margin: 10rpx;
+            font-size:36rpx;
+            line-height: 100rpx;
+            display: flex;
+        }
+        .name{
+            flex: 1;
+            font-size:34rpx;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            display: -webkit-box;
+            -webkit-line-clamp:1;
+            -webkit-box-orient: vertical;
+        }
+        .info{
+            font-size:24rpx;
+            color:orange;
+            text-align: right;
+            margin-right: 10rpx;
+        }
+    }
+    .type-box{
+        border-radius: 8rpx;
+        box-shadow: 4rpx 4rpx 6rpx 2rpx rgb(221, 222, 223);
+        .label{
+            font-weight: 600;
+            margin: 10rpx 10rpx 0 10rpx;
+            box-shadow: inset 0px -1px 1px -1px #cccccc;
+        }
+        .cell-max{
+            display: flex;
+            .capuls{
+                display: flex;
+                justify-content: flex-start;
+                flex-wrap: wrap;
+                .type{
+                    padding:10rpx;
+                    margin: 10rpx;
+                    border:1px solid #cccccc;
+                    font-size:32rpx;
+                    font-weight: bold;
+                    color:white;
+                    background-color: orange;
+                }
+            }
+        }
+        .edit{
+            height: 60rpx;
+            line-height: 60rpx;
+            font-size:32rpx;
+            color:#c8c8c8;
+            text-align: center;
+            text-decoration: underline;
+        }
+        
+    }
+
+    .skill-box{
+        border-radius: 8rpx;
+        box-shadow: 4rpx 4rpx 6rpx 2rpx rgb(221, 222, 223);
+        .label{
+            font-weight: 600;
+            margin: 10rpx 10rpx 0 10rpx;
+            box-shadow: inset 0px -1px 1px -1px #cccccc;
+        }
+        .content{
+            margin: 0 10rpx;
+        }
+        .edit{
+            height: 60rpx;
+            line-height: 60rpx;
+            font-size:32rpx;
+            color:#c8c8c8;
+            text-align: center;
+            text-decoration: underline;
+        }
+    }
+    .edit:active{
+        opacity: 0.6;
+        color:orange;
+    }
+
+    .swiper-box{
+        margin: 20rpx 10rpx;
+        .edit{
+            height: 60rpx;
+            line-height: 60rpx;
+            font-size:32rpx;
+            color:#c8c8c8;
+            text-align: center;
+            text-decoration: underline;
+        }
+        swiper{
+            image{
+                height: 100%;
+                width:100%;
+            }
+        }
+        .edit:active{
+            opacity: 0.6;
+            color:orange;
+        }
+    }
+}
+</style>
+<template>
+    <view class="user-center-mchnt-list-info-container">
+        <view class="panel">
+            <view class="cell">
+                <view class="label">商户门店</view>
+                <view class="name">{{mchntInfo.shopName}}</view>
+            </view>
+
+            <view class="cell">
+                <view class="label">联系人</view>
+                <view class="name">{{mchntInfo.mchntName}}</view>
+            </view>
+
+            <view class="cell" >
+                <view class="label">联系电话</view>
+                <view class="name">{{mchntInfo.mchntPhone}}</view>
+            </view>
+
+            <view class="cell-address" @tap="location">
+                <view class="label" style="width:100%;">门店地址</view>
+                <view class="content">{{mchntInfo.address}}</view>
+            </view>
+
+            <view class="cell">
+                <view class="label">商户类别</view>
+                <view class="name">{{mchntInfo.shopCategoryName}}</view>
+            </view>
+            <view class="info">
+                注：商户的基本信息是不可变更，如有疑问请联系客服。
+            </view>      
+        </view>
+    </view>
+</template>
+
+<script>
+import wepy from 'wepy'
+export default class UserCenterMchntListInfo extends wepy.page {
+
+    data = {
+        mchntInfo: null
+    }
+
+    onLoad(params, data) {
+        this.mchntInfo = data.preload.mchntInfo
+    }
+
+
+
+    methods =  {
+        location(){
+            wx.openLocation({
+                latitude: parseFloat(this.mchntInfo.latitude),
+                longitude: parseFloat(this.mchntInfo.longitude),
+                scale: 18
+            })
+        }
+    }
+
+}
+</script>

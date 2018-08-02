@@ -1,0 +1,379 @@
+<style lang="less" scoped>
+.container{
+    background-color: #ffffff;
+    .article{
+         margin: 0 6rpx;
+        .title{
+            text{
+                font-size:36rpx;
+                font-weight: bolder;
+            }
+        }
+
+        .source{
+            text{
+                font-size:24rpx;
+                color:#aaa;
+            }
+        }
+
+        .content{
+            font-size:32rpx;
+            text-indent: 2em;
+        }
+    }
+
+    .interaction{
+        .fabulous{
+            margin:10rpx 0;
+            font-size:24rpx;
+            display: flex;
+            justify-content: space-around;
+            .views,.zan{
+                width:20%;
+                height: 60rpx;
+                border-radius:32rpx;
+                color:lightsalmon;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                border:1px solid #cccccc;
+            }
+        }
+        .comment{
+            .title{
+                font-size:24rpx;
+                text-align: center;
+                color:#aaa;
+                display: block;
+            }
+            .comment-list{
+                margin:10rpx 10rpx;
+                display: flex;
+                flex-direction: column;
+                .item{
+                    margin:16rpx 0;
+                    display: flex;
+                    flex-direction: row;
+                    align-items: center;
+                    .comment-box{
+                        display: flex;
+                        flex-direction: column;
+                        flex: 1;
+                        margin: 0 10rpx;
+                        .nickname{
+                            font-size:28rpx;
+                            font-weight: bold;
+                        }
+                        .content{
+                            font-size:24rpx;
+                            text-indent: 2em;
+                        }
+                        .location{
+                            font-size:20rpx;
+                            color:#aaa;
+                            display: flex;
+                            justify-content: space-between;
+                            text{
+                                margin-left: 6rpx;
+                            }
+                        }
+                    }
+                }
+                .loading{
+                    font-size:28rpx;
+                    text-align: center;
+                    color:#c8c8c8;
+                }
+            }
+        }
+    }
+    .comment-panel{
+        border-top:2rpx solid aliceblue;
+        position: fixed;
+        bottom: 0;
+        width: 100%;
+        background-color: #ffffff;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        textarea{
+            border:2rpx solid #2e9fff;
+            width: 80%;
+            height: 48rpx;
+        }
+        .send{
+            font-size:32rpx;
+            width: 15%;
+            height: 64rpx;
+            line-height: 64rpx;
+            text-align: center;
+            background-color: #2e9fff;
+        }
+        textarea,.send{
+            margin: 10rpx 10rpx;
+            border-radius: 16rpx;
+        }   
+    }
+    .back{
+        position: fixed;
+        bottom: 8%;
+        width: 100rpx;
+        height: 100rpx;
+    }
+}
+@import "../wxParse/wxParse.wxss";
+</style>
+
+<template>
+
+  <view class="container">
+    <view class="article">
+        <view class="title">
+            <text>{{article.title}}</text>
+        </view>
+        <view class="source">
+            <text>{{article.resource}}</text>
+        </view>
+
+        <view class="content">
+            <import src="../wxParse/wxParse.wxml"/>
+            <template is="wxParse" data="{{wxParseData:content.nodes}}"/>
+        </view>
+    </view>
+
+    <view class="interaction">
+        <view class="fabulous">
+           <a class="views">👀({{article.views}})</a>
+           <a style=" {{fabulous ? ' border:2rpx solid peru;' : ''}}" class="zan" @tap="fabulous">👍({{article.fabulous}})</a>
+        </view>
+
+        <view class="comment">
+           <text class="title">—————网友留言——————</text>
+            <view class="comment-list">
+                <view class="item" wx:for="{{commentList.list}}" wx:key="{{index}}">
+                    <i class="iconfont icon-niming" style="font-size: 100rpx;color:#888888;"></i>
+                    <view class="comment-box">
+                        <text class="nickname">{{item.commentator}}</text>
+                        <view class="content">
+                            <text>{{item.content}}</text>
+                        </view>
+                        <view class="location">
+                            <view class="address">
+                                <i class="iconfont icon-dizhi1"/>
+                                <text>信阳市（默认）</text>
+                            </view>
+                            <view>{{item.createTime}}</view>
+                        </view>
+                    </view>
+                </view>
+                <view class="loading">
+                    <text>{{commentList.loading.tip}}</text>
+                </view>
+            </view>
+        </view>
+    </view>
+    <view style="height:50px;"></view>
+    <view class="comment-panel">
+        <textarea cursor-spacing="20" placeholder="📝请写一句话留言吧！（3个字以上。）" placeholder-style="font-size:14px;" auto-height maxlength="256" fixed="true" bindinput="inputValue" />
+        <a @tap="comment" class="send">发表</a>
+    </view>
+
+    <image wx:if="{{goIndex}}" @tap="back" class="back" src="/assets/images/back.png"/>
+
+  </view>
+</template>
+
+<script>
+  import wepy from 'wepy'
+  import req from '@/network'
+  import { baseUrl2 } from '@/config/index'
+  var WxParse = require('../wxParse/wxParse.js');
+  export default class IndexArticleDetail extends wepy.page {
+    
+    config = {
+      navigationBarTitleText: '详情',
+    }
+
+    data = {
+        fabulous: false,
+        article: null,
+        comment: '',
+        previewImage:[],
+        commentList:{
+           page:{
+                index: 0,
+                size:6
+            },
+            loading: {
+                hasMore: true,
+                tip: '数据加载中...'
+            },
+            list:null
+        },
+        goIndex: false
+
+    }
+
+    methods = {
+        back() {
+            wx.reLaunch({
+                url: '/pages/index'
+            })
+        },
+        inputValue(e){
+            this.comment = e.detail.value
+        },
+        comment(){
+            if(this.comment.length < 3) {
+                wx.showToast({
+                    title: this.comment.length === 0 ? '空空如也，写2个字吧！':'请输入合法得字符长度！',
+                    icon: 'none',
+                    duration: 1200
+                })
+                return
+            }
+            wx.showLoading({
+                title: '正在发表中...',
+                mask: true
+            })
+
+
+            req.post(baseUrl2+"comment/article",{id:this.article.id,content:this.comment}).then(res => {
+                wx.hideLoading()
+
+                if( res.code === 0){
+                    this.commentList.list.unshift(res.data)
+                    this.comment = ''
+                    this.$apply()
+                    wx.showToast({
+                        title: '发表成功！',
+                        icon: 'success',
+                        duration: 1200
+                    })
+                } else {
+                    wx.showToast({
+                        title: '不支持表情符号😁',
+                        icon: 'none',
+                        duration: 1200
+                    })
+                }
+
+                
+            })
+
+
+        },
+        wxParseImgTap(e){
+            if(this.previewImage.length === 0)return
+
+            wx.previewImage({
+                current: e.currentTarget.dataset.src,
+                urls: this.previewImage
+            })
+        },
+        wxParseImgLoad(e){
+            this.previewImage.push(e.target.dataset.src)
+        },
+        fabulous(){
+            if(!this.fabulous) {
+                this.article.fabulous =Number(this.article.fabulous) + 1
+
+                // rquest fabulous +1
+                req.get(baseUrl2+"news/fabulous",{id:this.article.id}).then(res => {
+                    if( res.code === 0){
+                        wx.setStorage({
+                            key: "F"+this.article.id,
+                            data:"mark"
+                        })
+                        this.fabulous = true
+                        this.$apply()
+                    }
+                })
+            }
+            
+        }
+
+    }
+
+    onLoad(params, data) {
+
+        // 如果从分享进入则调
+        if(data.preload === undefined) {
+            this.goIndex = true
+            req.get(baseUrl2+'news/detail',{id:params.id}).then(res =>{
+                this.initData(res.data)
+            })
+            return
+        }
+        // fetch cache data 
+        this.initData(data.preload.article)
+
+    }
+
+    onReachBottom() {
+      // more comments
+      this.nextComment()
+    }
+
+    onShareAppMessage(options) {
+        return {
+            title: this.article.title,
+            path: '/pages/index-article-detail?id='+this.article.id,
+            imageUrl:this.article.images[0]
+        }
+    }
+
+    initData(data) {
+        this.article = data
+        // parse html to wxml
+        WxParse.wxParse('content', 'html', this.article.content, this,5);
+
+        // fetch fabulous cache status
+        wx.getStorage({
+            key: "F"+this.article.id,
+            success:(res)=>{
+                this.fabulous = true
+            },
+            fail:(res)=>{
+                this.fabulous = false
+            },
+            complete:(res)=>{
+
+            }
+        })
+
+        // init  comments data
+        this.initComment()
+
+    }
+
+    initComment() {
+        req.get(baseUrl2+'comment/list',{page:0,size:this.commentList.page.size,id:this.article.id}).then(res => {
+            if(res.code === 0) {
+                // init
+                this.commentList.list = res.data.list
+                this.commentList.loading.hasMore = res.data.hasNext
+                this.commentList.loading.tip = res.data.list.length === 0 ? '暂无评论，抢个沙发~' : (res.data.hasNext ? '评论加载中...' : '没有更多评论了~')
+                this.$apply()
+            }
+        })
+    }
+
+    nextComment() {
+      if(!this.commentList.loading.hasMore){
+        return
+      }
+      req.get(baseUrl2+'comment/list',{page:++this.commentList.page.index,size:this.commentList.page.size,id:this.article.id}).then(res => {
+        if(res.code === 0) {
+          // append
+          this.commentList.list = this.commentList.list.concat(res.data.list)
+          this.commentList.loading.hasMore = res.data.hasNext
+          this.commentList.loading.tip = res.data.list.length === 0 ? '暂无评论，抢个沙发~' : (res.data.hasNext ? '评论加载中...' : '没有更多评论了~')
+          this.$apply()
+        }
+      })
+    }
+
+  }
+</script>

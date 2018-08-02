@@ -1,0 +1,152 @@
+<style lang="less" scoped>
+.user-center-mchnt-list-eidt-phone-container{
+    .cell-phone{
+        background-color: #ffffff;
+        padding: 20rpx 10rpx;
+        margin: 10rpx 0;
+        display: flex;
+        align-items: center;
+        .title{
+            height: 64rpx;
+            padding-right:10rpx;
+            font-size:32rpx;
+            line-height: 64rpx;
+        }
+        .phone{
+            flex: 1;
+            border: 1px solid #eceaea;
+            input{
+                height: 64rpx;
+            }
+        }
+        .btn{
+            height: 64rpx;
+            line-height: 64rpx;
+            margin-left:10rpx;
+        } 
+    }
+    .info{
+        font-size:28rpx;
+        color:orange;
+        margin: 10rpx;
+    }
+}
+</style>
+<template>
+    <view class="user-center-mchnt-list-eidt-phone-container">
+        <view class="cell-phone">
+            <view class="title">门店手机号</view>
+            <view class="phone">
+                <input bindblur="tapBlurCheckPhone" bindinput="tapInputPhone" maxlength="11" placeholder="请输入您手机号码/(必填)" type="text"/>
+            </view>
+            <view class="btn">
+                 <button @tap="editPhone" type="primary" size="mini">确定</button>
+            </view>
+        </view>
+        <view class="info">
+            默认与注册者联系手机号一致。
+        </view>
+    </view>
+</template>
+
+<script>
+import wepy from 'wepy'
+import req from '@/network'
+import { baseUrl } from '@/config/index'
+export default class UserCenterMchntListEditPhone extends wepy.page {
+
+    data = {
+        shopPhone: ''
+    }
+
+    onLoad() {
+      
+    }
+
+    checkIsPhone(phone){
+        let reg = /^[1][3,4,5,7,8][0-9]{9}$/;
+        if (!reg.test(phone)) {
+            return false
+        }
+        return true
+    }
+    
+
+    methods =  {
+        tapBlurCheckPhone(e){
+            let value = e.detail.value
+            if(value.length === 0){
+                wx.showToast({
+                    title: '手机号码不能为空！',
+                    icon: 'none'
+                })
+                return
+            }
+
+            if(value.length !== 11){
+                wx.showToast({
+                    title: '手机号码输入有误！',
+                    icon: 'none'
+                })
+                return
+            }
+        },
+        tapInputPhone(e){
+            this.shopPhone =  e.detail.value
+        },
+        editPhone(){
+
+            if(!this.checkIsPhone(this.shopPhone)){
+                wx.showToast({
+                    title: '手机号码格式有误！',
+                    icon: 'none'
+                })
+                return
+            }
+            wx.showLoading({
+                title: '请求中...',
+            })
+            wx.showNavigationBarLoading()
+            req.post(baseUrl+"shopInfo/updateShopInfo",{
+                shopPhone: this.shopPhone
+            }).then(res => {
+                wx.hideLoading()
+                wx.hideNavigationBarLoading()
+               
+
+                    
+                
+
+
+                if(res.code === 0) {
+
+                    wx.showToast({
+                        title: '成功',
+                        icon: 'success',
+                        duration: 1000
+                    })
+                    
+                    setTimeout(() => {
+                        wx.showModal({
+                            title: '提示',
+                            content: '点击确定返回到【用户中心】',
+                            success: function(res) {
+                                if (res.confirm) {
+                                    wx.switchTab({
+                                        url: './user-center'
+                                    })
+                                } else if (res.cancel) {
+
+                                }
+                            }
+                        })
+                    }, 1000);
+
+                }
+
+            })
+        }
+    }
+
+}
+</script>

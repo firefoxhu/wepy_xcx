@@ -1,0 +1,80 @@
+<style lang="less" scoped>
+.user-center-mchnt-list-container{
+    .mchnt-info{
+        display: flex;
+        background-color: #f8f8f8;
+        margin: 100rpx 100rpx;
+        height: 120rpx;
+        border-radius: 16rpx;
+        image{
+            width:120rpx;
+            height: 120rpx;
+        }
+        .title{
+            flex: 1;
+            font-size:36rpx;
+            line-height: 120rpx;
+            text-align: center;
+        }
+    }
+
+    .mchnt-info:active{
+        color:orange;
+        opacity: 0.6;
+    }
+}
+</style>
+<template>
+  <view class="user-center-mchnt-list-container">
+      <view class="mchnt-info" @tap="mchntInfo">
+          <image src="/assets/images/mchnt-info.png"/>
+          <view class="title">基本查看信息</view>
+      </view>
+
+      <view class="mchnt-info" @tap="mchntEdit">
+          <image src="/assets/images/shop-edit.png"/>
+          <view class="title">门店信息修改</view>
+      </view>
+
+      <view class="mchnt-info" @tap="faceEdit">
+          <image src="/assets/images/shop-up.png"/>
+          <view class="title">门店风采上传</view>
+      </view>
+  </view>
+</template>
+
+<script>
+import wepy from 'wepy'
+import req from '@/network'
+import { baseUrl } from '@/config/index'
+export default class UserCenterMchntList extends wepy.page {
+
+    data = {
+        mchntInfo: null
+    }
+
+    onLoad() {
+        req.get(baseUrl+"mchnt/mchntInfo").then(res => {
+            this.mchntInfo = res.data.data
+        })  
+    }
+
+
+
+    methods =  {
+        mchntInfo(){
+            this.$preload("mchntInfo",this.mchntInfo)
+            this.$navigate("./user-center-mchnt-list-info")
+        },
+        mchntEdit(){
+            this.$preload("mchntInfo",this.mchntInfo)
+            this.$navigate("./user-center-mchnt-list-edit")
+        },
+        faceEdit(){
+            this.$navigate("./user-center-mchnt-list-edit-shopface")
+        }
+    }
+
+
+}
+</script>

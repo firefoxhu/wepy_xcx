@@ -1,0 +1,186 @@
+<style lang="less">
+@import "./assets/style/animate.wxss";
+@import "./assets/style/weui.wxss";
+@import "./assets/style/icon.less";
+page {
+  height: 100%;
+  background-color: #ebe7e7;
+}
+.container {
+  width: 100%;
+}
+
+
+page{
+  // background-color: #F8F8F8;
+  font-size: 32rpx;
+  font-family: -apple-system-font,Helvetica Neue,Helvetica,sans-serif;
+}
+</style>
+
+<script>
+import wepy from 'wepy'
+import 'wepy-async-function'
+import req from '@/network'
+import * as interceptor from '@/network/interceptor'
+import { baseUrl } from '@/config'
+
+export default class extends wepy.app {
+  config = {
+    pages: [
+      
+      'pages/user-center',
+      'pages/user-center-mchnt-list',
+      'pages/user-center-mchnt-list-info',
+      'pages/user-center-mchnt-list-edit',
+      'pages/user-center-mchnt-list-edit-swiper', 
+      'pages/user-center-mchnt-list-edit-type',
+      'pages/user-center-mchnt-list-edit-servicecontent',
+      'pages/user-center-mchnt-list-edit-shopdetail',
+      'pages/user-center-mchnt-list-edit-phone', 
+      'pages/user-center-mchnt-list-edit-shopface',        
+      'pages/index',
+      'pages/circle',
+      'pages/mchnt',
+      'pages/mchnt-list',
+      'pages/mchnt-entry',  
+      'pages/mchnt-more',    
+      'pages/mchnt-detail',     
+      'pages/mchnt-entry-success',
+      'pages/post-result',
+      'pages/circle-detail',
+      'pages/circle-comment',
+      'pages/post',
+      'pages/index-article-detail',
+      'pages/index-category',
+      'pages/user-center-message',
+      'pages/user-center-circle',
+
+      'pages/video' 
+    ],
+    window: {
+      backgroundColor: '#ffffff',
+      backgroundTextStyle: 'dark',
+      navigationBarBackgroundColor: '#2e9fff',
+      navigationBarTitleText: '信阳365服务',
+      navigationBarTextStyle: 'white'
+    },
+    tabBar: {
+      color: '#aaaaaa',
+      selectedColor: '#ffffff',
+      backgroundColor: '#2e9fff',
+      borderStyle: '#2e9fff',
+      list: [
+        {
+          pagePath: 'pages/user-center',
+          text: '个人中心',
+          iconPath: 'assets/images/user-a.png',
+          selectedIconPath: 'assets/images/user-u.png'
+        },
+        {
+          pagePath: 'pages/index',
+          text: '资讯',
+          iconPath: 'assets/images/icon_index.png',
+          selectedIconPath: 'assets/images/icon_index_selected.png'
+        },
+        {
+          pagePath: 'pages/circle',
+          text: '圈子',
+          iconPath: 'assets/images/icon_circle.png',
+          selectedIconPath: 'assets/images/icon_circle_selected.png'
+        },
+        {
+          pagePath: 'pages/mchnt',
+          text: '商家服务',
+          iconPath: 'assets/images/icon_mchnt.png',
+          selectedIconPath: 'assets/images/icon_mchnt_selected.png'
+        }
+    ]
+    }
+  }
+
+  globalData = {
+    userInfo: null
+  }
+
+  constructor () {
+    super()
+    // 开启2个中间件
+    this.use('requestfix')
+    this.use('promisify')
+  }
+
+
+
+  methods = {
+    
+  }
+
+
+  onLaunch() {
+    req.baseUrl('').interceptor(interceptor.request, interceptor.response)
+
+    // 小程序登录 检查session是否过期    过期和第一次使用都做登录 
+    wx.checkSession({
+        success(res1){
+
+          if(wx.getStorageSync("xy365_3rd_session") === undefined || wx.getStorageSync("xy365_3rd_session").length === 0) {
+            wx.login({
+                success(res){
+                    if(res.code) {
+                        wx.request({
+                            url: baseUrl+'wx/login',
+                            data: {
+                              code: res.code,
+                              xy365_3rd_session: wx.getStorageSync("xy365_3rd_session")
+                            },
+                            success(res){
+                                wx.setStorage({
+                                    key:"xy365_3rd_session",
+                                    data: res.data.data.xy365_3rd_session
+                                })
+                            }
+                        })
+                    }
+                }
+            })
+          }
+        },
+        fail(){
+          wx.login({
+              success(res){
+                  if(res.code) {
+                      wx.request({
+                          url: baseUrl+'wx/login',
+                          data: {
+                            code: res.code,
+                            xy365_3rd_session: wx.getStorageSync("xy365_3rd_session")
+                          },
+                          success(res){
+                              wx.setStorage({
+                                  key:"xy365_3rd_session",
+                                  data: res.data.data.xy365_3rd_session
+                              })
+                          }
+                      })
+                  }
+              }
+          })
+        }
+    })
+  }
+
+  getUserInfo() {
+    if (this.globalData.userInfo) {
+      return new Promise((resolve, reject) => {
+        resolve(this.globalData.userInfo)
+      })
+    } else {
+      return wepy.getUserInfo().then(res => {
+        this.globalData.userInfo = res.userInfo
+        return res.userInfo
+      })
+    }
+  }
+}
+</script>

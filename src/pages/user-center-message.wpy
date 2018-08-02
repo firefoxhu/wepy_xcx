@@ -1,0 +1,31 @@
+<style lang="less" scoped>
+.user-center-message-container{
+
+}
+</style>
+<template>
+    <view class="user-center-message-container">
+        <view>消息中心</view>
+    </view>
+</template>
+
+<script>
+import wepy from 'wepy'
+export default class UserCenterMessage extends wepy.page {
+
+    data = {
+
+    }
+
+    onLoad() {
+        
+    }
+
+
+
+    methods =  {
+        
+    }
+
+}
+</script>

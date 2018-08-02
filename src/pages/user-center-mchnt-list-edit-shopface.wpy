@@ -1,0 +1,173 @@
+<style lang="less" scoped>
+.user-center-mchnt-list-edit-shopface-container{
+    .swiper{
+        background-color: #f8f8f8;
+        .title{
+            font-size:36rpx;
+            padding: 0 10rpx;
+            font-weight: bold;
+        }
+        swiper{
+            image{
+                height: 100%;
+                width:100%;
+            }
+        }
+        .notice{
+            font-size:24rpx;
+            text-align: right;
+            color:orange;
+            margin-right: 10rpx;
+        }
+    }
+    .photo{
+       .btn{
+           font-size:32rpx;
+       }
+    }
+    .btn2{
+        color:red;
+    }
+}
+</style>
+<template>
+  <view class="user-center-mchnt-list-edit-shopface-container">
+      <view class="swiper">
+        <view class="title">预览</view>
+        <swiper class="swiper" indicator-dots="true"
+            indicator-active-color="#2e9fff"
+            autoplay="true" 
+            duration="2000"
+            >
+            <block wx:for="{{pictures}}" wx:key="{{index}}">
+                <swiper-item>
+                    <image  mode="scaleToFill"   class="swiper-image" src="{{ item }}"/>
+                </swiper-item>
+            </block>
+        </swiper>
+        <view class="notice">（注）图片的上传每次都是全部替换，请您谨慎操作。做多可以一次性上传14张图片左右。</view>
+      </view>
+      <view class="photo">
+        <button size="mini" class="btn" @tap="selectPicture">选择</button>
+        <button type="primary" @tap="eidtPicture">确定修改</button>
+      </view>
+
+  </view>
+</template>
+
+<script>
+import wepy from 'wepy'
+import req from '@/network'
+import { baseUrl } from '@/config/index'
+
+export default class UserCenterMchntListEditShopface extends wepy.page {
+
+    data = {
+        pictures:[]
+    }
+
+    onLoad() {
+        
+    }
+
+
+
+    methods =  {
+
+        eidtPicture(){
+
+            if(this.pictures.length === 0){
+                wx.showModal({
+                    title: '图片选择提示',
+                    content: '您必须都得选择',
+                    showCancel: false,
+                    confirmText: '知道了'
+                })
+                return
+            }
+            // 上传图片
+            wx.showLoading({
+                title: '正在上传中...',
+                mask:true
+            })
+
+            let uploadImage = []
+            this.pictures.map(img=>{
+
+                wx.uploadFile({
+                    url: baseUrl+'xy/upload',
+                    filePath: img,
+                    name: 'file',
+                    header: {
+                    'content-type':'multipart/form-data'
+                    }, // 设置请求的 header
+                    success(res){
+                        uploadImage.push(res.data)
+                    },
+                    complete:(res)=>{
+                        wx.showLoading({
+                            title: '正在保存数据...',
+                            mask:true
+                        })
+                        if(uploadImage.length === this.pictures.length) {
+                            req.post(baseUrl+"shopInfo/updateShopInfo",{
+                                galleryPicture:uploadImage.join(',')
+                            }).then(res=>{
+                                wx.hideLoading()
+                                if(res.code === 0) {
+
+                                    wx.showToast({
+                                        title: '成功',
+                                        icon: 'success',
+                                        duration: 1000
+                                    })
+                                    
+                                    setTimeout(() => {
+                                        wx.showModal({
+                                            title: '提示',
+                                            content: '点击确定返回到【用户中心】',
+                                            success: function(res) {
+                                                if (res.confirm) {
+                                                    wx.switchTab({
+                                                        url: './user-center'
+                                                    })
+                                                } else if (res.cancel) {
+
+                                                }
+                                            }
+                                        })
+                                    }, 1000);
+
+                                }else{
+                                    wx.showToast({
+                                        title: '不支持表情符号！',
+                                        icon: 'none'
+                                    })
+                                }
+                            })
+                        }
+
+                    }
+                })
+
+            })
+            
+
+
+        },
+        selectPicture(){
+
+            wx.chooseImage({
+                count: 16, // 默认9
+                sizeType: ['compressed'], // 可以指定是原图还是压缩图，默认二者都有
+                sourceType: ['album'], // 可以指定来源是相册还是相机，默认二者都有
+                success:(res)=> {
+                    // 返回选定照片的本地文件路径列表，tempFilePath可以作为img标签的src属性显示图片
+                    this.pictures = res.tempFilePaths
+                    this.$apply() 
+                }
+            })
+        }   
+    }
+}
+</script>

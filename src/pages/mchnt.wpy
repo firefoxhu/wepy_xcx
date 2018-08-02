@@ -1,0 +1,458 @@
+<style lang="less" scoped>
+.mchnt-container{
+    background-color: #f8f8f8;
+    .swiper{
+        height: 240rpx;
+        image{
+            width:100%;
+            height:240rpx;
+        }
+    }
+    .sort-box{
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: space-between;
+        .item{
+            text-align: center;
+            padding: 20rpx;
+            .sort-content{
+                width: 140rpx;
+                height: 120rpx;
+                image{
+                    width:92rpx;
+                    height:92rpx;
+                }
+                .title{
+                    font-size:24rpx;
+                    color:#5b5b5b;
+                }
+            }
+        }
+        .item:active{
+            background-color: #ffffff;
+            opacity: 0.8;
+        }
+    }
+    .mchnt-box{
+        .header{
+            height: 60rpx;
+            padding:0 10rpx;
+            display: flex;
+            .title,.more{
+                flex: 1;
+                font-size:32rpx;
+                line-height: 60rpx
+            }
+            .more{
+                text-align: right;
+                color:#999;
+                font-size:24rpx;
+            }
+            .more:active{
+                color:#202020;
+            }
+        }
+        .body{
+            .item{
+                box-shadow: inset 0px -1px 1px -1px #c8c7cc;
+                padding: 10rpx 10rpx 20rpx 10rpx; 
+                display: flex;
+                align-items: center;
+                >image{
+                    width:180rpx;
+                    height: 160rpx;
+                }
+                .info{
+                    height: 160rpx;
+                    padding: 0 6rpx;
+                    flex: 1;
+                    display: flex;
+                    flex-direction: column;
+                    justify-content: space-between;
+                    .desc{
+                        font-size:28rpx;
+                        overflow: hidden;
+                        text-overflow: ellipsis;
+                        display: -webkit-box;
+                        -webkit-line-clamp:4;
+                        -webkit-box-orient: vertical;
+                        color:#202020;
+                        line-height: 32rpx;
+                        letter-spacing:2rpx
+                    }
+                    .address{
+                        font-size: 20rpx;
+                        color:#999;
+                        overflow: hidden;
+                        text-overflow: ellipsis;
+                        display: -webkit-box;
+                        -webkit-line-clamp:1;
+                        -webkit-box-orient: vertical;
+                        image{
+                            width:30rpx;
+                            height: 30rpx;
+                            vertical-align: text-bottom;
+                        }
+                    }
+                }
+                .call{
+                    height: 160rpx;
+                    border-left: 4rpx solid #2e9fff;
+                    display: flex;
+                    flex-direction: column;
+                    align-items: center;
+                    width:120rpx;
+                    image{
+                        width:80rpx;
+                        height: 80rpx;
+                    }
+                    .views,.distance{
+                        flex: 1;
+                        font-size:20rpx;
+                        display: inline-block;
+                    }
+                    .views{
+                        color:#999;
+                        i{
+                            font-size: 20rpx;
+                        }
+                    }
+                    .distance{
+                        color:#5b5b5b;
+                        overflow: hidden;
+                        text-overflow: ellipsis;
+                        display: -webkit-box;
+                        -webkit-line-clamp:1;
+                        -webkit-box-orient: vertical;
+                        padding-top:10rpx; 
+                    }
+                    
+                }
+            }
+        } 
+    }
+
+    .footer{
+        .loading{
+            text-align: center;
+            font-size: 28rpx;
+            color:#5f5f5f;
+        }
+    }
+    .ruzhu{
+        position: fixed;
+        bottom: 8%;
+        width: 100rpx;
+        height: 100rpx;
+        opacity: 0.8;
+        right:10rpx;
+        width: 100rpx;
+        height: 100rpx;
+        border-radius:16rpx;
+    }
+}
+.hover{
+    background-color: #ffffff;
+}
+</style>
+<template>
+    <view class="mchnt-container">
+        <swiper class="swiper" indicator-dots="{{swiperConfig.dots}}"
+            circular="true"
+            indicator-active-color="#2e9fff"
+            autoplay="{{swiperConfig.autoplay}}" interval="{{swiperConfig.interval}}" duration="{{swiperConfig.duration}}">
+            <block wx:for="{{swiperConfig.data.list}}" wx:key="{{index}}">
+            <swiper-item>
+                <image lazy-load="true" mode="scaleToFill"  class="swiper-image" src="{{item}}"/>
+            </swiper-item>
+            </block>
+        </swiper>
+
+        <view class="sort-box">
+            <view @tap.stop="selectCateogy('{{index}}','{{index === 7 ? 1 : 2 }}')" class="item" wx:for="{{categoryConfig.list}}" wx:key="{{index}}">
+                <view class="sort-content">
+                    <image lazy-load="true" mode="scaleToFill" src="{{item.picture}}"/>
+                    <view class="title">{{item.name}}</view>
+                </view>
+            </view>
+        </view>
+
+        <view class="mchnt-box">
+            <view class="header">
+                <view class="title"> 推荐门店</view>
+                <view @tap.stop="mchntMore" class="more">更多>></view>
+            </view>
+            <view class="body">
+                <block wx:for="{{recommendConfig.list}}"  wx:key="{{index}}">
+                    <view hover-class="hover" @tap.stop="selectMchnt('{{item}}','{{index}}')" class="item">
+                        <image @tap.stop="previewImage('{{index}}')" lazy-load="true" mode="scaleToFill" src="{{item.bannerPicture[0]}}"/>
+                        <view class="info">
+                            <view class="desc">{{item.shopSkillDescription}}</view>
+                            <view class="address">
+                                <image src="/assets/images/gps.png"/>{{item.address}}
+                            </view>
+                        </view>
+                        <view class="call">
+                            <view class="views">人气{{item.views}}</view>
+                            <image @tap.stop="callPhone('{{item.mchntPhone}}')" src="/assets/images/phone.png"/>
+                            <view class="distance">距约{{item.distance}}</view>
+                        </view>
+                    </view>
+                </block>
+            </view>
+        </view>
+
+        <view class="footer">
+            <view class="loading">
+                {{recommendConfig.loading.tip}}
+            </view> 
+        </view>
+
+        <image @tap.stop="mchntEntry" class="ruzhu" src="/assets/images/ruzhu.png"/>
+
+        
+    </view>
+</template>
+
+<script>
+import wepy from 'wepy'
+import req from '@/network'
+import { baseUrl } from '@/config/index'
+
+export default class Mchnt extends wepy.page {
+
+    config = {
+      enablePullDownRefresh: true,
+      backgroundTextStyle: 'dark'
+    }
+ 
+    data = {
+        grids: [0, 1, 2, 3, 4, 5, 6, 7, 8,9],
+        location:{
+            latitude:0,
+            longitude:0
+        },
+        swiperConfig:{
+            dots: true,
+            autoplay: true,
+            interval: 3000,
+            duration: 500,
+            data:{
+                list:[
+                    'http://luosen365.com/image/20180425/1524639638619.jpg',
+                    'http://luosen365.com/image/20180425/1524640019069.jpg',
+                    'http://luosen365.com/image/20180425/1524639781449.jpg'
+                ]
+            }
+        },
+        categoryConfig:{
+            list:[]
+        },
+        recommendConfig:{
+            loading:{
+                hasMore: true,
+                tip: '加载中...'
+            },
+            page:{
+                index: 0,
+                size: 6
+            },
+            list:[]
+        }
+    }
+
+    onPullDownRefresh() {
+        wx.showNavigationBarLoading()
+        wx.showLoading({
+            title: '加载中',
+        })
+        // 初始化数据
+        this.initRecommendShop()
+    }
+
+    onLoad() {
+        wx.showLoading({
+            title: '加载中',
+        })
+        wepy.getLocation({type: 'wgs84'})
+        .then(res => {
+            this.location.latitude = res.latitude
+            this.location.longitude = res.longitude
+            this.$apply()
+        }).catch(res=>{
+            console.log("位置未授权")
+        })
+        
+        this.initCategory()
+
+        // 初始化数据
+        this.initRecommendShop()
+    }
+
+    // 初始化类别
+    initCategory(){
+        let codes = ['HOME_REPAIR','HOUSEKEEP_SERVIC','DOOR_INSTALL','HOUSE_REPAIR','SECOND_MARKET','FREIGHT_MOVING','PART_TIME_JOB']
+
+        req.get(baseUrl+'category/code',{codes:codes.join(',')}).then(res => {
+            if(res.code === 0){
+                res.data.list.push({
+                    name: '其它',
+                    picture: 'http://image.luosen365.com/我11.png',
+                    code: 'ALL'
+                })
+                this.categoryConfig.list = res.data.list
+                
+                this.$apply()
+            }else{
+                wx.showModal({
+                    title: '请求结果提示',
+                    content: res.msg,
+                    showCancel: false,
+                    confirmText: '忽略'
+                })
+            }
+        })  
+    }
+
+    //初始化推荐门店 每个行业选出优秀门店做此展示
+    initRecommendShop(){
+
+        this.recommendConfig.page.index = 0
+
+        req.get(baseUrl+'shop/list',{
+            page: 0,
+            size: this.recommendConfig.page.size,
+            model: 'DEFAULT'
+        }).then(res => {
+            wx.hideLoading()
+            wx.hideNavigationBarLoading()
+            wx.stopPullDownRefresh()
+            if(res.code === 0){
+                this.recommendConfig.list = res.data.list
+                this.recommendConfig.loading.hasMore = res.data.hasNext
+                this.recommendConfig.loading.tip = res.data.hasNext ? '商户信息加载中...' : '已加载全部推荐商户~'
+                this.$apply()
+            }else{
+                wx.showModal({
+                    title: '请求结果提示',
+                    content: res.msg,
+                    showCancel: false,
+                    confirmText: '忽略'
+                })
+            }
+        })
+
+    }
+
+    nextRecommendShop(){
+        if(!this.recommendConfig.loading.hasMore){
+            return
+        }
+        wx.showNavigationBarLoading()
+        req.get(baseUrl+'shop/list',{
+            page: ++this.recommendConfig.page.index,
+            size: this.recommendConfig.page.size,
+            model: 'DEFAULT'
+        }).then(res => {
+            wx.hideNavigationBarLoading()
+            if(res.code === 0){
+                this.recommendConfig.list = this.recommendConfig.list.concat(res.data.list)
+                this.recommendConfig.loading.hasMore = res.data.hasNext
+                this.recommendConfig.loading.tip = res.data.hasNext ? '商户信息加载中...' : '已加载全部推荐商户~'
+                this.$apply()
+            }else{
+                wx.showModal({
+                    title: '请求结果提示',
+                    content: res.msg,
+                    showCancel: false,
+                    confirmText: '忽略'
+                })
+
+            }
+        })
+
+    }
+
+    methods = {
+        selectCateogy(index,type){
+            if(type === 1){
+                this.$navigate("./mchnt-more")
+                return
+            }
+            this.$preload("typeIdOrCagoryCode",this.categoryConfig.list[index].code)
+            this.$navigate("./mchnt-list")
+        },
+        previewImage(pos) {
+            wx.previewImage({
+                // 切换大图
+                current: this.recommendConfig.list[pos].bannerPicture[0].replace('com/','com/S'),
+                urls: this.recommendConfig.list[pos].bannerPicture.map(res=>res.replace('com/','com/S'))
+            })
+        },
+        callPhone(mobile) {
+            wepy.makePhoneCall({
+                phoneNumber: mobile 
+            })
+        },
+        mchntMore(){
+            this.$preload("model","RECOMMEND")
+            this.$navigate("./mchnt-list")
+        },
+        mchntEntry(){
+            this.$navigate("./mchnt-entry")
+        },
+        selectMchnt(item,pos) {
+            this.recommendConfig.list[pos].views = this.recommendConfig.list[pos].views + 1
+            req.post(baseUrl+'shopInfo/views?shopInfoId='+item.shopInfoId).then(res =>{})
+
+
+            this.$preload("shopInfo",this.recommendConfig.list[pos])
+            this.$navigate("./mchnt-detail")
+        }
+    }
+
+    computed = {
+
+        cacleDistance(){
+
+            return this.recommendConfig.list.map(res=>{
+
+                res.distance = this.getDistance(this.location.latitude,this.location.longitude,res.latitude,res.longitude)
+                
+                return res
+            })
+        }
+    }
+
+
+    getDistance(lat1, lng1, lat2, lng2) {
+        lat1 = lat1 || 0;  
+        lng1 = lng1 || 0;  
+        lat2 = parseFloat(lat2) || 0;  
+        lng2 = parseFloat(lng2) || 0;  
+
+        var rad1 = lat1 * Math.PI / 180.0;  
+        var rad2 = lat2 * Math.PI / 180.0;  
+        var a = rad1 - rad2;  
+        var b = lng1 * Math.PI / 180.0 - lng2 * Math.PI / 180.0;  
+
+        var r = 6378137;  
+        var distance = r * 2 * Math.asin(Math.sqrt(Math.pow(Math.sin(a / 2), 2) + Math.cos(rad1) * Math.cos(rad2) * Math.pow(Math.sin(b / 2), 2)));  
+        
+        if (distance > 1000){  
+            distance = (distance / 1000).toFixed(1) + "千米";  
+        }else{
+            distance = distance.toFixed(1) + '米'
+        }
+
+        return distance;  
+    }
+
+    onShareAppMessage(options) {
+        return {
+            title: '信阳家电维修、家政服务',
+            path: '/pages/mchnt'
+        }
+    }
+}
+</script>

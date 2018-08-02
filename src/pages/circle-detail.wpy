@@ -1,0 +1,377 @@
+<style lang="less" scoped>
+.circle-detail-container{
+  .content-box{
+    position: relative;
+    .blur{
+      background: #ffffff  url('http://bpic.588ku.com/back_pic/17/05/11/0aca186a485b75a765a4562b7d48ed4c.jpg!r850/fw/800') no-repeat;
+      background-size:100% 180rpx;
+      height: 360rpx;      
+      filter: blur(0px);
+      box-shadow: 0 10rpx 5rpx #CCCCCC;
+
+    }
+    .userinfo{
+      width:100%;
+      position: absolute;
+      top:120rpx;
+      text-align: center;
+      color:#0099CC;
+      image{
+        width:120rpx;
+        height: 120rpx;
+        border-radius: 50%;
+        background-color: #ffffff;
+      }
+      .nickname{
+        font-size:36rpx;
+      }
+      .views{
+        font-size:24rpx;
+        color:#cccccc;
+      }
+
+    }
+    .article{
+      background-color: #ffffff;
+      padding: 10rpx;
+      border-top-left-radius: 16rpx;
+      border-top-right-radius: 32rpx;
+      .content{
+        font-size:32rpx;
+        text-indent: 2em;
+      }
+      .image-group{
+        margin: 20rpx 0;
+        text-align: center;
+      }
+      .location{
+        font-size:24rpx;
+        color:#888888;
+        i{
+          color:orange;
+          font-size:28rpx;
+          margin-right: 6rpx;
+        }
+      }
+    }
+  }
+  .comment-box{
+    background-color: #ffffff;
+    .box-title{
+      margin: 0 20rpx;
+      font-size:36rpx;
+      border-bottom: 2rpx solid rgb(240, 237, 237);
+      text{
+        margin-left: 8rpx;
+        font-size:24rpx;
+        color:#99CCFF;
+      }
+    }
+    .comment-list{
+      padding-bottom: 10rpx;
+      .item{
+        margin: 0rpx 10rpx;
+        .header-box{
+          display: flex;
+          flex-direction: row;
+          align-items: center;
+          >image{
+            width:120rpx;
+            height: 120rpx;
+            border-radius: 50%;
+            border-color: moccasin;
+          }
+          .content-box{
+            padding:10rpx 10rpx;
+            flex:1;
+            .title{
+              display: flex;
+              justify-content: space-between;
+              .nickname{
+                font-size:28rpx;
+                color:#3366CC;
+              }
+              .zan{
+                font-size:28rpx;
+                color:#cccccc;
+              }
+            }
+            .content{
+              text-indent: 2em;
+              font-size:24rpx;
+            }
+            .footer{
+              margin: 10rpx 0;
+              .location{
+                padding:10rpx 10rpx;
+                border-top:2rpx solid rgb(240, 237, 237);
+                display: flex;
+                flex-direction: row;
+                font-size:18rpx;
+                justify-content: space-between;
+                align-items: center;
+                .address{
+                  margin-left: 5rpx;
+                  color:#FF6600;
+                }
+                .time{
+                  color:#CCCCCC;
+                }
+              }
+            }
+          } 
+        }
+      }
+    }
+  }
+  .loading{
+    padding: 20rpx;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    image{
+      width: 50rpx;
+      height: 50rpx;
+    }
+    .tip{
+      font-size:12pt;
+      color:#888888;
+      margin-left: 10rpx;
+    }
+  }
+  .tool-bar{
+    border-top:2rpx solid rgb(240, 237, 237);
+    position:fixed;
+    bottom: 0;
+    width: 100%;
+    display: flex;
+    background-color: #ffffff;
+    height: 60rpx;
+    color:#cccccc;
+    .like,.comment{
+      text-align: center;
+      flex: 1;
+      font-size:40rpx;
+      i{
+        font-size:40rpx;
+      }
+    }
+    .like{
+      border-right:2rpx solid rgb(240, 237, 237);
+    } 
+  }
+  .touch-active{
+    background-color: #ece8e8;
+    opacity: 0.6;
+  }
+}
+</style>
+<template>
+  <view class="circle-detail-container">
+   
+    <view class="content-box">
+      <view class="blur">
+      </view>
+      <view class="userinfo">
+        <image lazy-load="true" src="{{article.avatar}}"/>
+        <view class="nickname">{{article.author}}</view>
+        <view class="views">{{article.views}}浏览</view>
+      </view>
+      <view class="article">
+        <view class="content">
+          {{article.content}}
+        </view>
+        <view class="image-group">
+          <block wx:for="{{article.pictures}}" wx:key="{{index}}">
+            <image @tap.stop="previewImage('{{item}}')" mode="aspectFit" lazy-load="true" src="{{item}}"/>
+          </block>
+        </view>
+
+        <view class="location">
+          <i class="iconfont icon-dizhi1"></i>{{article.location}}
+        </view>
+      </view>
+    </view>
+
+    <view class="comment-box">
+      <view class="box-title">市友点评<text>（{{commentConfig.commentsNumber}}）</text></view>
+      <view class="comment-list">
+        <block wx:for="{{commentConfig.list}}" wx:key="{{index}}">
+          <view class="item">
+            <view class="header-box">
+              <image lazy-load="true" src="{{item.avatar}}"/>
+              <view class="content-box">
+                <view class="title">
+                  <view class="nickname">{{item.nickname}}</view>
+                  <view class="zan" @tap.stop="fabulousComment('{{item}}','{{index}}')">
+                    <i class="iconfont icon-zan" style="{{item.isFabulous === true ? 'color:orange' : ''}}" />（{{item.fabulous}}）
+                  </view>
+                </view>
+                <view class="content">
+                  {{item.content}}
+                </view>
+                <view class="footer">
+                  <view class="location">
+                    <view class="address">
+                      <i class="iconfont icon-dizhi1"/>{{item.location}}
+                    </view>
+                    <view class="time">{{item.createTime}}</view>
+                  </view>
+                </view>
+              </view>
+            </view>
+            <view></view>
+          </view>
+        </block>
+        <view class="loading">
+          <image src="/assets/images/comment-loading.png" wx:if="{{commentConfig.loading.hasMore}}"/>
+          <image style="height:128rpx;width:128rpx;" src="/assets/images/xy-no-data.png" wx:else if="{{ !commentConfig.loading.hasMore  && commentConfig.list.length === 0}}"/>
+          <view class="tip">{{commentConfig.loading.tip}}</view>
+        </view>
+      </view>
+    </view>
+    <view style="height:70rpx;"></view>
+    
+    <view class="tool-bar">
+      <view class="like">
+         <i class="iconfont icon-weibiaoti-_fuzhi"/>收藏
+      </view>
+      <view class="comment" hover-class="touch-active" @tap="comment">
+         <i class="iconfont icon-pinglun"/>留言
+      </view>
+    </view>
+  </view>
+</template>
+
+<script>
+  import wepy from 'wepy'
+  import req from '@/network'
+  import { baseUrl } from '@/config/index'
+  export default class CircleDetail extends wepy.page {
+
+    config = {
+      navigationBarTitleText: '详情查看'
+    }
+
+    data = {
+      article:{},
+      commentConfig:{
+        commentsNumber: 0,
+        loading:{
+          hasMore: false,
+          tip: '评论加载中...'
+        },
+        page:{
+          index: 0,
+          size: 6
+        },
+        list:[]
+      }
+    }
+
+    onShow () {
+      
+      // 检查是否有更新过后需要刷新的数据没【实现自动刷新】
+      let commented = wx.getStorageSync('commented')
+      if(commented) {
+        wx.showNavigationBarLoading()
+        this.initComment()
+        wx.removeStorageSync("commented")
+        setTimeout(() => {
+          wx.hideNavigationBarLoading()
+        }, 1000);
+      }
+
+
+    }
+
+    computed ={
+      isFabulous() {
+        return this.commentConfig.list.map(e=>{
+          let isFabulous = wx.getStorageSync("C_"+e.commentId)
+          if(isFabulous) {
+            e.isFabulous = true
+          }
+          return e
+        })
+      }
+    }
+
+    methods = {
+      fabulousComment(item,index){
+        let isFabulous = wx.getStorageSync("C_"+item.commentId)
+        if(!isFabulous){
+          // 事实处理浏览次数
+          this.commentConfig.list[index].fabulous += 1
+          wx.setStorageSync("C_"+item.commentId,item.fabulous + 1)
+          req.post(baseUrl+"comment/fabulous?commentId="+item.commentId).then(res => {
+          })
+        }else{
+          // 事实处理浏览次数
+          this.commentConfig.list[index].fabulous -= 1
+          this.commentConfig.list[index].isFabulous = false
+          wx.removeStorageSync("C_"+item.commentId)
+          req.post(baseUrl+"comment/unfabulous?commentId="+item.commentId).then(res => {
+          })
+        }
+      },
+      previewImage(pic){
+        wx.previewImage({
+          current: pic,
+          urls: this.article.pictures
+        })
+      },
+      comment(){
+        this.$preload("article",this.article)
+        this.$navigate("./circle-comment")
+      }
+    }
+
+    onLoad(params, data) {
+      // fetch cache data 
+      this.article = data.preload.article
+
+      console.log(this.article)
+
+      // fetch comment data
+      this.initComment()
+    }
+
+    initComment(){
+      req.get(baseUrl+'comment/list',{page: 0,size: this.commentConfig.page.size,articleId: this.article.articleId}).then(res => {
+        if(res.code === 0){
+          this.commentConfig.commentsNumber = res.data.commentsNumber
+          this.commentConfig.list = res.data.list
+          this.commentConfig.loading.hasMore = res.data.hasNext
+          this.commentConfig.loading.tip = (res.data.list.length != 0) && res.data.hasNext  ? '评论加载中...' : ((res.data.list.length === 0) ? '暂无评论，占个沙发吧~' : '已加载全部评论...')
+          this.$apply()
+        }
+      })
+    }
+
+    onReachBottom() {
+      // more comment
+      this.nextComment()
+    }
+
+
+    nextComment(){
+      if( !this.commentConfig.loading.hasMore){
+        return
+      }
+      wx.showNavigationBarLoading()
+      req.get(baseUrl+'comment/list',{
+        page: ++ this.commentConfig.page.index,
+        size: this.commentConfig.page.size
+      }).then(res => {
+        wx.hideNavigationBarLoading()
+        if(res.code === 0){
+          this.commentConfig.list = this.commentConfig.list.concat(res.data.list)
+          this.commentConfig.loading.hasMore = res.data.hasNext
+          this.commentConfig.loading.tip = res.data.hasNext ? '正在加载中...' : '没有更多留言啦~'
+          this.$apply()
+        }
+      })
+    }
+  }
+</script>

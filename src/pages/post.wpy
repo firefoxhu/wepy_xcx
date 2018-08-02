@@ -1,0 +1,280 @@
+<style lang="less" scoped>
+.post-container{
+  .editor{
+    margin: 20rpx 20rpx;
+    padding:10rpx;
+    background-color: #ffffff;
+    border-top-left-radius: 16rpx;
+    border-top-right-radius: 32rpx;
+    border-bottom-left-radius: 32rpx;
+    border-bottom-right-radius: 16rpx;
+    textarea{
+      width:100%;
+      border-bottom:2rpx solid rgb(240, 237, 237);
+    }
+    .footer{
+      margin-top: 20rpx;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      .location{
+        font-size:32rpx;
+        i{
+          font-size:40rpx;
+          margin-right: 6rpx;
+        }
+      }
+      .submit{
+        button{
+          background-color: orange;
+          color:#ffffff;
+          font-size:28rpx;
+          i{
+            font-size:28rpx;
+          }
+        }
+      }
+      
+    }
+
+    .anonymous{
+      text-align: right;
+      font-size: 32rpx;
+      margin-top: 8rpx;
+    }
+
+  }
+
+  .pic-box{
+    padding-top:6rpx;
+    margin: 0 20rpx;
+    display: flex;
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: flex-start;
+    background-color: #ffffff;
+    .item{
+      position: relative;
+      width: 30%;
+      text-align: center;
+      margin: 10rpx 10rpx;
+      .preview{
+        width: 100%;
+        height: 240rpx;
+        border-top-right-radius:16rpx;
+        border:1px solid #e9e6e6;
+      }
+      .delete{
+        position: absolute;
+        top:0;
+        right: -3rpx;
+        width:50rpx;
+        height: 50rpx;
+        opacity: 0.8;
+      }
+    }
+    .add{
+      margin-top: 12rpx; 
+      width: 30%;
+      text-align: center;
+      i{
+        font-size: 180rpx;
+        color: #cccccc;
+      }
+    }
+  }
+
+}
+</style>
+<template>
+  <view class="post-container">
+    <view class="editor">
+      <textarea
+        bindblur="bindTextAreaBlur" 
+        placeholder="您发表的信息会被我们信阳网友浏览，请文明发言。"
+        placeholder-style="font-size:24rpx;"
+        maxlength="512"
+        auto-focus="true"
+        show-confirm-bar="true"
+        name="textarea"/>
+        <view class="anonymous">
+          <checkbox-group bindchange="anonymousChange">
+            <label>
+              <checkbox/>匿名
+            </label>
+          </checkbox-group>
+        </view>
+        <view class="footer" >
+          <view class="location" @tap.stop="selectLocation">
+            <i class="iconfont icon-dizhi"/>{{location}}
+          </view>
+          <view class="submit">
+            <button wx:if="{{ anonymous === '0'}}" size="mini"  open-type="getUserInfo" bindgetuserinfo="postArticle">提交<i class="iconfont icon-anquanfabu"/></button>
+
+            <button wx:if="{{ anonymous === '1'}}" size="mini" @tap.stop="postAnonymousArticle">提交<i class="iconfont icon-anquanfabu"/></button>
+
+          </view>
+        </view>
+    </view>
+    <view class="pic-box">
+      <view class="item" wx:for="{{picture}}" wx:key="{{index}}">
+        <image class="preview" mode="aspectFit"  src="{{item}}"/>
+        <image class="delete" src="/assets/images/xy-remove-upload-image.png"/>
+      </view>
+      <view wx:if="{{picture.length !== 9}}" class="add" @tap="selectPictrue">
+        <i class="iconfont icon-shangchuantupianicon"/>
+      </view>
+    </view>
+  </view>
+</template>
+
+<script>
+  import wepy from 'wepy'
+
+  import req from '@/network'
+  import { baseUrl } from '@/config/index'
+  export default class Post extends wepy.page {
+
+    config = {
+      navigationBarTitleText: '发表信息',
+      enablePullDownRefresh: false
+    }
+
+    data = {
+      picture:[],
+      location: "信阳市（默认）",
+      anonymous: '0',
+      content: ""
+      
+    }
+
+    writeArticle(){
+
+      if(this.content.length <= 6) {
+        wx.showToast({
+          title: '请写一句话吧（6个字以上）...',
+          icon: 'none',
+          duration: 2000
+        })
+        return
+      }
+      
+      let params = {
+        content: this.content,
+        location: this.location,
+        anonymous: this.anonymous
+      }
+
+      if(this.anonymous === '0') {
+        params.nickname = this.$parent.globalData.userInfo.nickName
+        params.avatar = this.$parent.globalData.userInfo.avatarUrl
+      }
+      wx.showLoading({
+        title: '正在发布中...',
+        mask:true,
+      })
+      if(this.picture.length > 0){
+        let uploadImage = []
+        for(let i=0;i<this.picture.length;i++){
+          wx.uploadFile({
+            url: baseUrl+'xy/upload',
+            filePath: this.picture[i],
+            name: 'file',
+            header: {
+              'content-type':'multipart/form-data'
+            }, // 设置请求的 header
+            success(res){
+              uploadImage.push(res.data)
+            },
+            complete:(res)=>{
+              this.$apply()
+              if(uploadImage.length === this.picture.length) { // 上传完毕
+                params.images  = uploadImage.join(',')
+                req.post(baseUrl+"article/write",params).then(res => {
+                  wx.hideLoading()
+                  if(res.code === 0){
+                    // 返回刷新的标志
+                    wx.setStorageSync('posted', '1')
+                    wx.redirectTo({
+                      url: '/pages/post-result'
+                    })
+                  }else{
+                    wx.showToast({
+                      title: '很抱歉我们的服务器被玩坏了...',
+                      icon: 'none',
+                      duration: 2000
+                    })
+                  }
+                })
+              }
+            }
+          })
+        }
+      }else{
+        req.post(baseUrl+"article/write",params).then(res => {
+          wx.hideLoading()
+          if(res.code === 0){
+            // 返回刷新的标志
+            wx.setStorageSync('posted', '1')
+            wx.redirectTo({
+              url: '/pages/post-result'
+            })
+          }else{
+            wx.showToast({
+              title: '很抱歉我们的服务器被玩坏了...（不支持图标）',
+              icon: 'none',
+              duration: 2000
+            })
+          }
+        })
+      }
+
+    }
+
+    methods = {
+      anonymousChange(e){
+        if(e.detail.value.length === 0) {
+          this.anonymous = '0'
+        }else{
+          this.anonymous = '1'
+        }
+      },
+      selectLocation(){
+        wx.chooseLocation({
+          success: res=> {
+            this.location = res.name
+            this.$apply()
+          }
+        })
+      },
+      bindTextAreaBlur(e){
+        this.content = e.detail.value
+      },
+      postArticle(e){
+        if(e.detail.userInfo) {
+          this.$parent.globalData.userInfo = e.detail.userInfo
+          this.writeArticle()
+        }
+      },
+      postAnonymousArticle(){
+        this.writeArticle()
+      },
+      selectPictrue(){
+        wx.chooseImage({
+          count: 9, // 默认9
+          sizeType: [ 'compressed'], // 可以指定是原图还是压缩图，默认二者都有
+          sourceType: ['album', 'camera'], // 可以指定来源是相册还是相机，默认二者都有
+          success:(res)=>{
+            // 返回选定照片的本地文件路径列表，tempFilePath可以作为img标签的src属性显示图片
+            var tempFilePaths = res.tempFilePaths
+            this.picture = tempFilePaths
+            this.$apply()
+          }
+        })
+      }
+    }
+
+
+  }
+</script>

@@ -1,0 +1,894 @@
+<style lang="less" scoped>
+.mchnt-entry-container{
+    .cell-picker{
+        margin: 10rpx 0;
+        padding: 20rpx 10rpx;
+        background-color: #ffffff;
+        .picker{
+            color:blue;
+        }
+    }
+
+    .cell-shopName{
+        margin: 10rpx 0;
+        padding: 20rpx 10rpx;
+        background-color: #ffffff;
+        display: flex;
+        align-items: center;
+        .label{
+            font-size:34rpx;
+        }
+        .input{
+            flex: 1;
+            padding-left:10rpx;
+            input{
+                height: 64rpx;
+                border:1px solid #eceaea;
+            }
+        }
+    }
+    .cell-skill{
+        margin: 10rpx 0;
+        padding:10rpx;
+        background-color: #ffffff;
+        .label{
+            padding-right:10rpx;
+            font-size:34rpx;
+            height: 64rpx;
+            .tip{
+                font-size:24rpx;
+                font-weight: normal;
+                color:orangered;
+            }
+            .help{
+                display: inline-block;
+                width: 38rpx;
+                height: 38rpx;
+                border:1px solid #cccccc;
+                border-radius: 50%;
+                text-align: center;
+                color: #cccccc;
+                line-height: 38rpx;
+            }
+            .help:active{
+                color:orange;
+            }
+        }
+        .textarea{
+            flex: 1;
+            border-radius: 8rpx;
+            textarea{
+                margin: 0 auto;
+                padding: 6rpx;
+                border-radius: 10rpx;
+                border:1px solid #eceaea;
+                height: 240rpx;
+                width: 95%;
+                
+            }
+            .count{
+                text-align: right;
+                font-size: 28rpx;
+                padding: 10rpx 20rpx 0 20rpx;
+            }
+        }
+    }
+    .cell-address{
+        padding: 20rpx 10rpx;
+        border-bottom:1rpx solid #cccccc;
+        background-color: #ffffff;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        height: 64rpx;
+        .text{
+            font-size:28rpx;
+            line-height: 64rpx;
+        }
+        
+        .arrow{
+           font-size:40rpx;
+           color:#cccccc;
+        }
+    }
+    .cell-address:active{
+        background-color: #f3f0f0;
+    }
+    .cell-street{
+        background-color: #ffffff;
+        .title{
+            height: 64rpx;
+            line-height: 64rpx;
+            padding:10rpx;
+            font-size:34rpx;
+            .tip{
+                font-size:24rpx;
+                color:#cccccc;
+            }
+        }
+        .textarea{
+            textarea{
+                margin: 0 auto;
+                padding: 6rpx;
+                border-radius: 10rpx;
+                border:1px solid #eceaea;
+                height: 120rpx; 
+                width: 95%;       
+
+            }
+            .count{
+                text-align: right;
+                font-size: 28rpx;
+                padding: 10rpx 20rpx 0 20rpx;
+            }
+        }
+    }
+    .cell-banner{
+        margin: 10rpx 0;
+        padding: 10rpx;
+        background-color: #ffffff;
+        .title{
+            padding-right:10rpx;
+            font-size:34rpx;
+            height: 64rpx;
+            .tip{
+                font-size:24rpx;
+                color:#cccccc;
+            }
+            .help{
+                display: inline-block;
+                width: 38rpx;
+                height: 38rpx;
+                border:1px solid #cccccc;
+                border-radius: 50%;
+                text-align: center;
+                color: #cccccc;
+                font-weight: normal;
+                line-height: 38rpx;
+            }
+            .help:active{
+                color:yellow;
+            }
+        }
+        .content{ 
+            background-color: #ffffff;
+            display: flex;
+            justify-content: flex-start;
+            border:2rpx solid #cccccc;
+            align-items: center;
+            border-radius: 10rpx;
+            .image-box{
+                position: relative;
+                padding: 10rpx 0 0 10rpx;
+                .image{
+                    width:220rpx;
+                    height: 180rpx;
+                }
+                .delete{
+                    position: absolute;
+                    top:10rpx;
+                    right:0;
+                    width: 60rpx;
+                    height: 60rpx;
+                    border-radius: 0;
+                    opacity: 0.8;
+                }
+                
+            }
+            .upload{
+                margin: 10rpx;
+                width:220rpx;
+                height: 180rpx;
+                border:1px solid #cccccc;
+            }
+        }
+        .count{
+            text-align: right;
+            font-size: 28rpx;
+            padding: 10rpx 20rpx 0 20rpx;
+        }  
+    }
+    .cell-phone{
+        background-color: #ffffff;
+        padding: 20rpx 10rpx;
+        margin: 10rpx 0;
+        display: flex;
+        align-items: center;
+        .title{
+            height: 64rpx;
+            padding-right:10rpx;
+            font-size:32rpx;
+            line-height: 64rpx;
+        }
+        .phone{
+            flex: 1;
+            border: 1px solid #eceaea;
+            input{
+                height: 64rpx;
+            }
+        }
+        .code{
+            text-align: center;
+            width:180rpx;
+            color:#3cc51f;
+            line-height: 64rpx;
+            border-top: 2rpx solid #eceaea;
+            border-right: 2rpx solid #eceaea;
+            border-bottom: 2rpx solid #eceaea;
+            padding: 4rpx;
+        }
+        .code:active{
+            background-color: #f3f0f0;
+        }
+    }
+    .cell-code{
+        background-color: #ffffff;
+        padding: 20rpx 10rpx;
+        margin: 10rpx 0;
+        display: flex;
+        align-items: center;
+        .code{
+            height: 64rpx;
+            padding-right:10rpx;
+            font-size:32rpx;
+            line-height: 64rpx;
+        }
+        .input{
+            flex: 1;
+            border: 1px solid #eceaea;
+            input{
+                height: 64rpx;
+            }
+        }
+    }
+
+    input{
+        padding:4rpx;
+    }
+    .cell-agreen{
+        margin: 0 10rpx;
+        height: 40rpx;
+        font-size:30rpx;
+        label{
+            color:#999;
+            line-height: 40rpx;
+        }
+        .treaty{
+            color:#586c94;
+            line-height: 60rpx;
+        }
+    }
+}
+</style>
+<template>
+    <view class="mchnt-entry-container">
+
+        <view class="cell-picker">
+            <picker bindchange="categoryPicker" value="{{categoryCodes.index}}" range="{{categoryName}}">
+                <view class="picker">
+                商户类别：{{categoryName[categoryCodes.index]}}
+                </view>
+            </picker>
+        </view>
+
+        <view class="cell-shopName">
+            <view class="label">商户名称</view>
+            <view class="input">
+                <input bindblur="tapBlurCheckShopName" bindinput="tapInputShopName" maxlength="32" placeholder="请输入您的门店名称/(必填)" type="text"/>
+            </view>
+        </view>
+
+        <view class="cell-skill">
+            <view class="label">
+                商户经营内容<text class="tip">（用于商户列表展示的标题）</text> <text class="help">?</text>
+            </view>
+            <view class="textarea">
+                <textarea bindblur="tapBlurCheckSkill" bindinput="tapInputSkill" maxlength="256" placeholder="请输入您的门店主要业务/服务"/>
+                <view class="count">{{skillCount}}/256</view>
+            </view>
+        </view>
+
+        <view class="cell-address" @tap="selectAddress">
+            <view  class="text">
+                <i class="iconfont icon-dizhi1"/> {{shopForm.address.length === 0 ? '请选择坐标地址（必选）' : shopForm.address }}
+            </view>
+            <view class="arrow">></view>
+        </view>
+
+        <view class="cell-street">
+            <view class="title">详细描述<text class="tip">（非必填）</text></view>
+            <view class="textarea">
+                <textarea bindinput="tapInputAddressDesc" maxlength="180" placeholder="请输入您的门店的具体位置描述/（非必填）"/>
+                <view class="count">{{addressCount}}/180</view>
+            </view>
+        </view>
+
+        <view class="cell-banner">
+            <view class="title">门店照片<text class="tip">（默认使用第一张作为商户的列表图片展示）</text><text class="help">?</text></view>
+            <view class="content">
+                <block wx:for="{{chooseImage}}" wx:key="{{index}}">
+                    <view class="image-box">
+                        <image class="image" src="{{item}}"/>
+                        <image @tap.stop="deletePicture('{{index}}')" class="delete" src="/assets/images/xy-remove-upload-image.png"/>
+                    </view>
+                </block>
+                <image @tap.stop="choosePicture" wx:if="{{chooseImage.length <= 2}}" class="upload" src="/assets/images/plus.png"/>
+            </view>
+            <view class="count">{{chooseImage.length}}/3</view>
+        </view>
+
+        <view class="cell-shopName">
+            <view class="label">联系人</view>
+            <view class="input">
+                <input bindblur="tapBlurCheckMchntName" bindinput="tapInputMchntName" maxlength="8" placeholder="请输入您的大名/(必填)" type="text"/>
+            </view>
+        </view>
+
+        <view class="cell-phone">
+            <view class="title">手机号</view>
+            <view class="phone">
+                <input bindblur="tapBlurCheckPhone" bindinput="tapInputPhone" maxlength="11" placeholder="请输入您手机号码/(必填)" type="text"/>
+            </view>
+            <view @tap.stop="fetchCode" class="code">{{codeTimer.message}}</view>
+        </view>
+
+        <view class="cell-code">
+            <view class="code">验证码</view>
+            <view class="input">
+                <input bindblur="tapBlurCode" bindinput="tapInputCode" maxlength="6" placeholder="请输入手机短信收到的6位验证码" type="text"/>
+            </view>
+        </view>
+
+        <view class="cell-agreen">
+            <checkbox-group bindchange="tapAgree">
+                <label>
+                    <checkbox class="checkbox"/>阅读并同意
+                </label>
+                <text class="treaty">《相关条款》</text>
+            </checkbox-group>
+        </view>
+
+        <view class="weui-btn-area">
+            <button class="weui-btn" type="primary" open-type="getUserInfo" bindgetuserinfo="mchntEntry">确定</button>
+        </view>
+
+    </view>
+</template>
+
+
+<script>
+import wepy from 'wepy'
+import req from '@/network'
+import { baseUrl } from '@/config/index'
+export default class MchntEntry extends wepy.page {
+
+    data = {
+
+        categoryCodes: {
+            index: 0,
+            list: []
+        },
+        skillCount: 0,
+        addressCount: 0,
+        chooseImage: [],
+        mchntForm:{
+            mchntPhone: '',
+            mchntName: '',
+            code: ''
+        },
+        shopForm:{
+            shopName: '',
+            address: '',
+            latitude: '',
+            longitude: '',
+            addressDescription: ''
+        },
+        shopInfoForm:{
+            shopPhone: '',
+            skillDescription: '',
+            bannerPicture: '',
+            categoryCode: ''
+        },
+        agreeTreaty: false,
+        smsCode: '',
+        codeTimer:{
+            time: 60,
+            message: '获取验证码',
+            disabled: false
+        }
+    }
+
+    computed = {
+        categoryName(){
+            return this.categoryCodes.list.map(res=>{
+                return res.name;
+            })
+        }
+    }
+
+    onLoad() {
+        this.initCategory()
+    }
+
+    initCategory(){
+        req.get(baseUrl+'category/list').then(res => {
+            if(res.code === 0){
+                this.categoryCodes.list = res.data.list
+                this.categoryCodes.list.unshift({
+                    name: '--请选择--',
+                    code: 'select'
+                })
+                
+                this.$apply()
+            }else{
+                wx.showModal({
+                    title: '请求结果提示',
+                    content: res.msg,
+                    showCancel: false,
+                    confirmText: '忽略'
+                })
+            }
+        })
+    }
+
+    checkIsPhone(phone){
+        let reg = /^[1][3,4,5,7,8][0-9]{9}$/;
+        if (!reg.test(phone)) {
+            return false
+        }
+        return true
+    }
+
+    methods =  {
+        categoryPicker(e){
+            let categoryIndex = parseInt(e.detail.value)
+            this.shopInfoForm.categoryCode = this.categoryCodes.list[categoryIndex].code
+            this.categoryCodes.index = categoryIndex
+        },
+        deletePicture(index) {
+            this.chooseImage.splice(index,1)
+            this.$apply()
+        },
+        choosePicture(){
+            wx.chooseImage({
+                count: 3 - this.chooseImage.length, // 默认9
+                sizeType: [ 'compressed'], // 可以指定是原图还是压缩图，默认二者都有
+                sourceType: ['album', 'camera'], // 可以指定来源是相册还是相机，默认二者都有
+                success:(res)=>{
+                    // 返回选定照片的本地文件路径列表，tempFilePath可以作为img标签的src属性显示图片
+                    var tempFilePaths = res.tempFilePaths
+                    this.chooseImage =  this.chooseImage.concat(tempFilePaths)
+                    this.$apply()
+                }
+            })
+        },
+        tapInputAddressDesc(e){
+            if(e.detail.value.length <= 180){
+                this.addressCount = e.detail.value.length
+                this.shopForm.addressDescription = e.detail.value
+            }
+        },
+        fetchCode(){
+            
+            if(this.codeTimer.disabled){
+                return
+            }
+
+            let phone = this.mchntForm.mchntPhone
+            if(phone.length === 11){
+                if(!this.checkIsPhone(phone)){
+                    wx.showToast({
+                        title: '我觉得这肯定不是您的手机号，请您在仔细查一下吧！【'+phone+'】',
+                        icon: 'none',
+                        duration: 6000
+                    })
+                    return
+                }else{
+                    //后台发送验证码
+                    req.get(baseUrl+"code/sms",{phone:phone}).then(res => {
+
+                        if(res.code === 0){
+                            
+                            wx.showModal({
+                                title: '短信验证码下发提示',
+                                content: res.message,
+                                showCancel: false,
+                                confirmText: '知道了'
+                            })
+                            
+                            this.codeTimer.disabled = true
+                        
+
+                            let t = setInterval(() => {
+                                this.codeTimer.time = this.codeTimer.time - 1
+                                this.codeTimer.message = this.codeTimer.time + '/s'
+                                if(this.codeTimer.time === 0){
+                                    this.codeTimer.time = 60
+                                    this.codeTimer.message = '重新获取验证码'
+                                    this.codeTimer.disabled = false
+                                    clearInterval(t)
+                                }
+                                this.$apply()
+                            }, 1000);
+                        }else{
+                            wx.showModal({
+                                title: '短信验证码下发提示',
+                                content: res.message,
+                                showCancel: false,
+                                confirmText: '知道了'
+                            })
+                        }
+                        
+                    })
+                }
+            }else{
+                wx.showToast({
+                    title: '手机号码输入有误！',
+                    icon: 'none',
+                    duration: 3000
+                })
+            }
+        },
+        tapBlurCode(e){
+            let value = e.detail.value
+            if(value.length === 0) {
+                wx.showToast({
+                    title: '验证码不能为空【请点击获取验证码，然后查收手机短信】！',
+                    icon: 'none',
+                    duration: 3000
+                })
+                return
+            }
+            if(value.length !== 6){
+                wx.showToast({
+                    title: '验证码是六位数字！',
+                    icon: 'none'
+                })
+            }
+        },
+        tapInputCode(e){
+            this.smsCode = e.detail.value
+        },
+        tapBlurCheckPhone(e){
+            let value = e.detail.value
+            if(value.length === 0){
+                wx.showToast({
+                    title: '手机号码不能为空！',
+                    icon: 'none'
+                })
+                return
+            }
+
+            if(value.length !== 11){
+                wx.showToast({
+                    title: '手机号码输入有误！',
+                    icon: 'none'
+                })
+                return
+            }
+            // 验证手机号是否已经占用
+            // 后台查询 验证是否商户名称存在
+            wx.showLoading({
+                title: '验证名称手机号是否已被占用！',
+            })
+            req.get(baseUrl+"mchnt/checkPhone",{phone:this.mchntForm.mchntPhone}).then(res => {
+                wx.hideLoading()
+                if(res.code !== 0){
+                    wx.showModal({
+                        title: '手机号占用检测',
+                        content: res.msg,
+                        showCancel: false,
+                        confirmText: '知道了'
+                    }) 
+                }
+            })
+
+        },
+        tapInputPhone(e){
+            this.mchntForm.mchntPhone =  e.detail.value
+        },
+        tapAgree(e){
+            if(e.detail.value.length === 1){
+                this.agreeTreaty = true;
+            }else{
+                this.agreeTreaty = false;
+            }
+        },
+        tapInputMchntName(e){
+           this.mchntForm.mchntName =  e.detail.value
+          
+        },
+        tapBlurCheckMchntName(e){
+            let value = e.detail.value
+            if(value.length === 0) {
+                wx.showToast({
+                    title: '联系人不能为空！',
+                    icon: 'none'
+                })
+                return
+            }
+
+            if(value.length <= 1){
+                wx.showToast({
+                    title: '联系人最少也得2个字符！',
+                    icon: 'none'
+                })
+            }
+
+        },
+        selectAddress(){
+            wx.chooseLocation({
+                success: res => {
+                    
+                    this.shopForm.address = res.address
+                    this.shopForm.latitude = res.latitude
+                    this.shopForm.longitude = res.longitude
+                    this.$apply()
+                },
+                fail: res=>{
+                    // 数据重置
+                    this.shopForm.address = ''
+                    this.shopForm.latitude = ''
+                    this.shopForm.longitude = ''
+                    // 拒绝做授权后再次授权
+
+                    wx.openSetting({
+                        success: (res) => {
+                        }
+                    })
+                }
+            })
+        },
+        tapInputSkill(e){
+            if(e.detail.value.length <= 256){
+                this.skillCount = e.detail.value.length
+                this.shopInfoForm.skillDescription = e.detail.value
+            }
+        },
+        tapBlurCheckSkill(e){
+            let value = e.detail.value
+            if(value.length === 0) {
+                wx.showToast({
+                    title: '这个描述非常重要，用户只有看到你的描述才知道你的服务是什么！',
+                    icon: 'none',
+                    duration: 3000
+                })
+                return
+            }
+
+        },
+        tapInputShopName(e){
+            this.shopForm.shopName = e.detail.value
+        },
+        tapBlurCheckShopName(e) {
+            let value = e.detail.value
+            if(value.length === 0) {
+                wx.showToast({
+                    title: '商户名称不内为空！',
+                    icon: 'none'
+                })
+                return
+            }
+
+            if(value.length <= 3) {
+                wx.showToast({
+                    title: '很抱歉您商户名称太过于短小精悍，不合法！',
+                    icon: 'none'
+                })
+                return
+            }
+
+            // 后台查询 验证是否商户名称存在
+            wx.showLoading({
+                title: '验证名称是否被占用',
+            })
+            req.get(baseUrl+"shop/checkName",{shopName: this.shopForm.shopName}).then(res => {
+                wx.hideLoading()
+                if(res.code !== 0){
+                    wx.showModal({
+                        title: '商户名称检测',
+                        content: res.msg,
+                        showCancel: false,
+                        confirmText: '知道了'
+                    })
+                }
+            })
+
+        },
+        mchntEntry(e) {
+
+            if(!this.agreeTreaty){
+                wx.showModal({
+                    title: '协议提示',
+                    content: '请阅读并同意《相关条约》',
+                    showCancel: false,
+                    confirmText: '知道了'
+                })
+                return
+            }
+
+            if(this.shopInfoForm.categoryCode.length === 0 || this.shopInfoForm.categoryCode === 'select'){
+                wx.showModal({
+                    title: '【商户类别】提示',
+                    content: '请选择商户的类别！',
+                    showCancel: false,
+                    confirmText: '知道了'
+                }) 
+                return
+            }
+
+
+            let message = '';
+
+            let shopName = this.shopForm.shopName.length;
+            if(shopName === 0) {
+                message = '【商户名称】不能为空！'
+            }else if(shopName <= 3){
+                message = '【商户名】至少3个字符以上！'
+            }
+
+            if(message.length !== 0) {
+                wx.showModal({
+                    title: '【商户名称】提示',
+                    content: message,
+                    showCancel: false,
+                    confirmText: '知道了'
+                })
+                return
+            }
+            
+
+            let skills = this.shopInfoForm.skillDescription.length
+            if(skills === 0) {
+                message = '【商户经营内容】不能为空！'
+            }else if(skills <= 12){
+                message = '【商户经营内容】至少12个字符以上！'
+            }
+
+            if(message.length !== 0) {
+                wx.showModal({
+                    title: '【商户经营内容】提示',
+                    content: message,
+                    showCancel: false,
+                    confirmText: '知道了'
+                })
+                return
+            }
+
+            if(this.shopForm.address.length === 0) {
+                wx.showModal({
+                    title: '【选择地址坐标】提示',
+                    content: '请选择您的地址坐标！',
+                    showCancel: false,
+                    confirmText: '知道了'
+                })
+                return
+            }
+
+            let mchntName = this.mchntForm.mchntName.length
+
+            if(mchntName === 0){
+                message = '联系人不能为空！'
+            }else if(mchntName <= 1) {
+                message = '联系人最少也2个字符！'
+            }
+
+            if(message.length !== 0) {
+                 wx.showModal({
+                    title: '【联系人】提示',
+                    content: message,
+                    showCancel: false,
+                    confirmText: '知道了'
+                })
+                return
+            }
+
+            let mobile = this.mchntForm.mchntPhone.length
+            if(mobile === 0){
+                message = '手机号不能为空！'
+            }else if(mobile !== 11){
+                message = '手机号必须是11位！'
+            }
+
+            if(message.length !== 0) {
+                 wx.showModal({
+                    title: '【手机号】提示',
+                    content: message,
+                    showCancel: false,
+                    confirmText: '知道了'
+                })
+                return
+            }
+
+            let code = this.smsCode.length
+            if(code === 0) {
+                message = '验证码不能为空！'
+            }else if(code !== 6){
+                message = '验证码为6位整数！'
+            }
+
+            if(message.length !== 0) {
+                wx.showModal({
+                    title: '【验证码】提示',
+                    content: message,
+                    showCancel: false,
+                    confirmText: '知道了'
+                })
+                return
+            }
+
+            if(this.chooseImage.length === 0){
+                wx.showModal({
+                    title: '【门店照片】提示',
+                    content: '您至少选择一张照片！',
+                    showCancel: false,
+                    confirmText: '知道了'
+                })
+                return
+            }
+
+            // 上传图片
+            wx.showLoading({
+                title: '正在发布中...',
+                mask:true,
+            })
+            let uploadImage = []
+            for(let i=0;i<this.chooseImage.length;i++){
+                wx.uploadFile({
+                    url: baseUrl+'xy/upload',
+                    filePath: this.chooseImage[i],
+                    name: 'file',
+                    header: {
+                    'content-type':'multipart/form-data'
+                    }, // 设置请求的 header
+                    success(res){
+                        uploadImage.push(res.data)
+                    },
+                    complete:(res)=>{
+                        this.$apply()
+                        if(uploadImage.length === this.chooseImage.length) { // 上传完毕
+                            this.shopInfoForm.bannerPicture  = uploadImage.join(',')
+                            req.post(baseUrl+"mchnt/comeIn",{
+                                mchntPhone: this.mchntForm.mchntPhone,
+                                mchntName: this.mchntForm.mchntName,
+                                smsCode: this.smsCode,
+
+                                shopName: this.shopForm.shopName,
+                                address: this.shopForm.address,
+                                latitude: this.shopForm.latitude,
+                                longitude: this.shopForm.longitude,
+                                addressDescription: this.shopForm.addressDescription,
+                                categoryCode: this.shopInfoForm.categoryCode,
+
+                                shopPhone: this.mchntForm.mchntPhone,
+                                skillDescription: this.shopInfoForm.skillDescription,
+                                bannerPicture: this.shopInfoForm.bannerPicture
+
+                            }).then(res => {
+                                wx.hideLoading()
+                                if(res.code === 0){
+                                    this.$redirect("./mchnt-entry-success")
+                                }else{
+                                    wx.showModal({
+                                        title: '请求结果提示',
+                                        content: res.msg,
+                                        showCancel: false,
+                                        confirmText: '知道了'
+                                    })
+                                }
+                            
+                            })
+                        }
+                    }
+                })
+            }
+
+
+            // 保存商户信息
+
+           
+            //this.$redirect("./mchnt-entry-success")
+        }
+    }
+}
+</script>

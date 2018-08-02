@@ -1,0 +1,238 @@
+<style lang="less" scoped>
+.user-center-mchnt-list-edit-container{
+
+    .type-box{
+        border-radius: 8rpx;
+        box-shadow: 4rpx 4rpx 6rpx 2rpx rgb(221, 222, 223);
+        .label{
+            font-weight: 600;
+            margin: 10rpx 10rpx 0 10rpx;
+            box-shadow: inset 0px -1px 1px -1px #cccccc;
+        }
+        .cell-max{
+            display: flex;
+            .capuls{
+                display: flex;
+                justify-content: flex-start;
+                flex-wrap: wrap;
+                .type{
+                    padding:10rpx;
+                    margin: 10rpx;
+                    border:1px solid #cccccc;
+                    font-size:32rpx;
+                    font-weight: bold;
+                    color:white;
+                    background-color: orange;
+                }
+            }
+        }
+        .edit{
+            height: 60rpx;
+            line-height: 60rpx;
+            font-size:32rpx;
+            color:#c8c8c8;
+            text-align: center;
+            text-decoration: underline;
+        }
+        
+    }
+
+    .skill-box{
+        border-radius: 8rpx;
+        box-shadow: 4rpx 4rpx 6rpx 2rpx rgb(221, 222, 223);
+        .label{
+            font-weight: 600;
+            margin: 10rpx 10rpx 0 10rpx;
+            box-shadow: inset 0px -1px 1px -1px #cccccc;
+        }
+        .content{
+            margin: 0 10rpx;
+        }
+        .edit{
+            height: 60rpx;
+            line-height: 60rpx;
+            font-size:32rpx;
+            color:#c8c8c8;
+            text-align: center;
+            text-decoration: underline;
+        }
+    }
+    .edit:active{
+        opacity: 0.6;
+        color:orange;
+    }
+
+    .swiper-box{
+        margin: 20rpx 10rpx;
+        .edit{
+            height: 60rpx;
+            line-height: 60rpx;
+            font-size:32rpx;
+            color:#c8c8c8;
+            text-align: center;
+            text-decoration: underline;
+        }
+        swiper{
+            image{
+                height: 100%;
+                width:100%;
+            }
+        }
+        .edit:active{
+            opacity: 0.6;
+            color:orange;
+        }
+    }
+
+    .panel{
+        border-radius: 8rpx;
+        box-shadow: 4rpx 4rpx 6rpx 2rpx rgb(221, 222, 223);
+        .cell-address{
+            .label{
+                width:160rpx;
+                font-weight: 600;
+            }
+            margin: 10rpx;
+            .content{
+                text-indent: 1em;
+            }
+        }
+        .label{
+            width:160rpx;
+            font-weight: 600;
+        }
+        .edit{
+            height: 60rpx;
+            line-height: 60rpx;
+            font-size:32rpx;
+            color:#c8c8c8;
+            text-align: center;
+            text-decoration: underline;
+            line-height: 100rpx;
+        }
+        .edit:active{
+            opacity: 0.6;
+            color:orange;
+        }
+        .cell{
+            height: 100rpx;
+            margin: 10rpx;
+            font-size:36rpx;
+            line-height: 100rpx;
+            display: flex;
+        }
+        .name{
+            flex: 1;
+            font-size:34rpx;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            display: -webkit-box;
+            -webkit-line-clamp:1;
+            -webkit-box-orient: vertical;
+        }
+        .info{
+            font-size:24rpx;
+            color:orange;
+            text-align: right;
+            margin-right: 10rpx;
+        }
+    }
+
+}
+
+
+</style>
+<template>
+  <view class="user-center-mchnt-list-edit-container">
+
+    <view class="swiper-box">
+        <swiper class="swiper" indicator-dots="{{swiperConfig.dots}}"
+            indicator-active-color="#2e9fff"
+            autoplay="{{swiperConfig.autoplay}}" 
+            duration="{{swiperConfig.duration}}"
+            >
+            <block wx:for="{{swiperConfig.list}}" wx:key="{{index}}">
+                <swiper-item>
+                    <image lazy-load="true" mode="scaleToFill"   class="swiper-image" src="{{ item }}"/>
+                </swiper-item>
+            </block>
+        </swiper>
+        <view class="edit" @tap="editSwiper">修改</view>
+    </view>
+
+    <view class="type-box">
+        <view class="label">类别类型</view>
+        <view class="cell-max">
+            <view class="capuls">
+                <block wx:for="{{mchntInfo.typeDTOS}}" wx:key="{{index}}">
+                    <view class="type">{{item.name}}</view>
+                </block>
+            </view>  
+        </view>
+        <view class="edit" @tap="editType">修改范围</view>
+    </view>
+
+    
+
+    <view class="skill-box">
+        <view class="label">服务内容</view>
+        <view class="content">{{mchntInfo.shopSkillDescription}}</view>
+        <view class="edit" @tap="editServicecontent">修改</view>
+    </view>
+
+    <view class="skill-box">
+        <view class="label">门店详情</view>
+        <view class="content">{{mchntInfo.description === null ? '暂无' : mchntInfo.description}}</view>
+        <view class="edit" @tap="editShopdetail">修改</view>
+    </view>
+
+    <view class="panel">
+        <view class="cell">
+            <view class="label">门店电话</view>
+            <view class="name">{{mchntInfo.shopPhone}}</view>
+            <view class="edit" @tap="editPhone">修改</view>
+        </view>
+    </view>
+
+  </view>
+</template>
+
+<script>
+import wepy from 'wepy'
+export default class UserCenterMchntListEdit extends wepy.page {
+
+    data = {
+        mchntInfo: null,
+        swiperConfig:{
+            dots: true,
+            autoplay: false,
+            duration: 500,
+            list:[]
+        }
+    }
+
+    onLoad(params, data) {
+        this.mchntInfo = data.preload.mchntInfo
+        this.swiperConfig.list = this.mchntInfo.bannerPicture
+    }
+
+    methods =  {
+        editSwiper(){
+            this.$navigate('./user-center-mchnt-list-edit-swiper')
+        },
+        editType(){
+            this.$preload("mchntInfo",this.mchntInfo)
+            this.$navigate('./user-center-mchnt-list-edit-type')
+        },
+        editServicecontent(){
+            this.$navigate('./user-center-mchnt-list-edit-servicecontent')   
+        },
+        editShopdetail(){
+            this.$navigate('./user-center-mchnt-list-edit-shopdetail')
+        },
+        editPhone(){
+            this.$navigate('./user-center-mchnt-list-edit-phone')
+        }
+    }
+}
+</script>

@@ -1,0 +1,368 @@
+<style lang="less" scoped>
+.index-container{
+  .swiper-box{
+    .swiper-image{
+      width: 100%;
+    }
+  }
+  /**
+  swiper end
+  */
+  .sort-box{
+    padding:6rpx 12rpx 18rpx 12rpx;
+    margin:12rpx 12rpx;
+    background-color: #ffffff;
+    box-shadow: 4rpx 6rpx 6rpx 4rpx rgb(221, 222, 223);
+    .sort-title{
+      i{
+        color:#2e9fff;
+      }
+      .title{
+        margin-left: 12rpx;
+        font-size:32rpx;
+        color: rgb(58, 34, 2);
+      }
+    }
+    
+    .sort{
+      display: flex;
+      flex-flow: row wrap;
+      color:rgb(90, 69, 31);
+      .item{
+        display: flex;
+        flex-direction: column; 
+        width:25%;
+        align-items: center;
+        .icon{
+          width:120rpx;
+          height:120rpx;
+          border-radius:50%;
+          box-shadow: 4rpx 4rpx 6rpx 2rpx floralwhite;
+        }
+        text{
+          font-size:24rpx;
+          font-weight: bold;
+        }
+      }
+    }
+  }
+  /**
+  sort end
+  */
+  .recommend-box{
+    margin:12rpx 12rpx;
+    padding:6rpx 12rpx 18rpx 12rpx;
+    background-color: #ffffff;
+    .recommend-title{
+      i{
+        color: red;
+      }
+      .title{
+        font-size:32rpx;
+        margin-left: 12rpx;
+        color:rgb(58, 34, 2);
+      }
+    }
+    .list{
+      display: flex;
+      flex-direction: column;
+      .item{
+        display: flex;
+        flex-direction: row;
+        box-shadow: 4rpx 4rpx 6rpx 2rpx rgb(221, 222, 223);
+        margin:10rpx 10rpx 10rpx 4rpx;
+        .icon{
+          width: 260rpx;
+          height: 160rpx;
+        }
+        .content{
+          padding: 0 6rpx;
+          display: flex;
+          flex-direction: column;
+          justify-content: space-between;
+          flex: 1;
+          .title{
+            font-size:28rpx;
+          }
+          .info{
+            display: flex;
+            justify-content: space-between;
+            .fabulous,.views,.source{
+              text{
+                font-size:20rpx;
+                color:rgb(122, 119, 83);
+              }
+              i{
+                font-size: 26rpx;
+                margin-left: 4rpx;
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+  .top-to{
+    position: fixed;
+    bottom: 8%;
+    width: 100rpx;
+    height: 100rpx;
+    opacity: 0.8;
+    right:10rpx;
+    image{
+      width: 100rpx;
+      height: 100rpx;
+    }
+  }
+}
+.loading{
+  text-align: center;
+  font-size:12px;
+  color:#aaa;
+}
+</style>
+<template>
+  <view class="index-container">
+    <view class="swiper-box">
+      <swiper indicator-dots="{{swiperConfig.dots}}"
+        circular="true"
+        autoplay="{{swiperConfig.autoplay}}" interval="{{swiperConfig.interval}}" duration="{{swiperConfig.duration}}">
+        <block wx:for="{{swiperConfig.data.list}}" wx:key="{{index}}">
+          <swiper-item>
+            <image lazy-load="true" mode="scaleToFill"  class="swiper-image" src="{{item}}"/>
+          </swiper-item>
+        </block>
+      </swiper>
+    </view>
+    <!--
+      swiper end
+    -->
+    <view class="sort-box">
+      <view class="sort-title">
+        <i class="iconfont icon-Bduanicon_fenleiguanli"></i>
+        <text class="title">分类</text>
+      </view>
+      
+      <view class="sort">
+        <view class="item" @tap.stop="selectSort('{{item}}')" wx:for="{{sortConfig.list}}" wx:key="{{index}}">
+          <image lazy-load="true" class="icon" src="{{item.imgUrl}}" />
+          <text>{{item.title}}</text>
+        </view>
+      </view>
+    </view>
+    <!--
+      sort end
+    -->
+    <view class="recommend-box">
+      <view class="recommend-title">
+        <i class="iconfont icon-redianpinglun"></i>
+        <text class="title">热点推荐</text>
+      </view>
+      <view class="list">
+        <view class="item" data-index="{{index}}" @tap.stop="selectArticle('{{item}}')" wx:for="{{recommendConfig.list}}" wx:key="{{index}}">
+          <image  @tap.stop="previewImage('{{item.images[0]}}')"
+            class="icon" lazy-load="true" src="{{item.images[0]}}" />
+          <view class="content">
+            <viwe class="title">{{item.title}}</viwe>
+            <view class="info">
+              <view class="source"><text>{{item.resource}}</text></view>
+              <view class="views">
+                <text>{{item.views}}</text>
+                <i class="iconfont icon-zixun-liulanliang"></i>
+              </view>
+              <view class="fabulous">
+                <text>{{item.fabulous}}</text>
+                <i class="iconfont icon-zan"></i>
+              </view>  
+            </view>
+          </view>
+        </view>
+        <view class="loading">
+          <text>{{recommendConfig.loading.tip}}</text>
+        </view>
+      </view>
+    </view>
+
+    <view wx:if="{{topTo}}"  class="top-to" @tap.stop="topTo">
+      <image src="/assets/images/xy-top.png"/>
+    </view>
+  </view>
+</template>
+
+<script>
+  import wepy from 'wepy'
+  import req from '@/network'
+  import { baseUrl2 } from '@/config/index'
+  const threshold = 600
+  export default class Index extends wepy.page {
+    config = {
+      enablePullDownRefresh: true,
+      backgroundTextStyle: 'dark'
+    }
+
+    data = {
+      topTo: false,
+      swiperConfig:{
+        dots: true,
+        autoplay: true,
+        interval: 3000,
+        duration: 500,
+        data:{
+          list:[
+            'http://luosen365.com/image/20180425/1524639638619.jpg',
+            'http://luosen365.com/image/20180425/1524640019069.jpg',
+            'http://luosen365.com/image/20180425/1524639781449.jpg'
+          ]
+        }
+      },
+      sortConfig:{
+        list:[]
+      },
+      recommendConfig:{
+        page:{
+          index: 0,
+          size: 8
+        },
+        loading: {
+          hasMore: true,
+          tip: '数据加载中...'
+        },
+        list:null
+      }
+      
+    }
+
+    methods = {
+      selectSort(item) {
+        this.$preload("category",item)
+        this.$navigate("./index-category")
+      },
+      selectArticle(item,e) {
+        wx.getStorage({
+            key: "V"+item.id,
+            success:(res)=>{
+            },
+            fail:(res)=>{
+
+              // 拿缓存 判断是否点击过  更新主数据
+              this.recommendConfig.list[e.currentTarget.dataset.index].views = Number(item.views) + 1
+              // 同步传递数据
+              item.views =  Number(item.views) + 1
+
+              // 异步请求 浏览+1
+              req.get(baseUrl2+"news/views",{id:item.id}).then(res => {
+                if( res.code === 0)
+                  wx.setStorage({
+                    key:"V"+item.id,
+                    data:"mark"
+                  })
+              })
+
+            },
+            complete:(res)=>{
+
+              this.$preload("article",item)
+              this.$navigate("./index-article-detail")
+            }
+          })  
+      },
+      previewImage(pic) {
+        wx.previewImage({
+          current: '',
+          urls: [pic]
+        })
+      },
+      topTo(){
+        this.topTo = false
+        wx.pageScrollTo({
+          scrollTop: 0,
+          duration: 300
+        })
+      }
+    }
+
+    onPullDownRefresh() {
+      setTimeout(() => {
+        wx.stopPullDownRefresh()
+      }, 1000);
+    }
+
+    onReachBottom() {
+      // more recommend
+      this.nextRecommend()
+    }
+
+    onPageScroll (value) {
+
+      if(value.scrollTop > threshold && !this.topTo) {
+        this.topTo = true
+        this.$apply()
+        return
+      } 
+      if(value.scrollTop < threshold && this.topTo){
+        this.topTo = false
+        this.$apply()
+        return
+      }
+    }
+    
+    onLoad() {
+      try {
+        var res = wx.getSystemInfoSync()
+      } catch (e) {
+        // Do something when catch error
+      }
+
+      // init swiper
+
+      // init sort
+      this.initSort()
+
+      // init recommend
+      this.initRecommend()  
+    }
+
+    onShareAppMessage(options) {
+        return {
+            title: '信阳365',
+            path: '/pages/index'
+        }
+    }
+
+    initRecommend() {
+      req.get(baseUrl2+'news/recommend',{page:0,size:this.recommendConfig.page.size}).then(res => {
+        if(res.code === 0) {
+          // init
+          this.recommendConfig.list = res.data.list
+          this.recommendConfig.loading.hasMore = res.data.hasNext
+          this.recommendConfig.loading.tip = res.data.list.length === 0 ? '暂无数据~' : (res.data.hasNext ? '数据加载中...' : '没有更多数据了~')
+          this.$apply()
+        }
+      })
+    }
+
+    nextRecommend() {
+      if(!this.recommendConfig.loading.hasMore){
+        return
+      }
+      req.get(baseUrl2+'news/recommend',{page:++this.recommendConfig.page.index,size:this.recommendConfig.page.size}).then(res => {
+        if(res.code === 0) {
+          // append
+          this.recommendConfig.list = this.recommendConfig.list.concat(res.data.list)
+          this.recommendConfig.loading.hasMore = res.data.hasNext
+          this.recommendConfig.loading.tip = res.data.list.length === 0 ? '暂无数据~' : (res.data.hasNext ? '数据加载中...' : '没有更多数据了~')
+          this.$apply()
+        }
+      })
+    }
+    
+    initSort() {
+      req.get(baseUrl2+'category',{page:0,size:8,classId: '2904e1433c9541939e36f8b45e1abbdc'}).then(res => {
+        if(res.code === 0) {
+        this.sortConfig.list = res.data.list
+        this.$apply()
+        }
+      })
+    }
+  }
+</script>

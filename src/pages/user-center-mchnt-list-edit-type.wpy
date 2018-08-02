@@ -1,0 +1,148 @@
+<style lang="less" scoped>
+.user-center-mchnt-list-eidt-type-container{
+    background-color: #ffffff;
+    height: 100%;
+    .title{
+        font-size:34rpx;
+        padding: 20rpx 10rpx; 
+        font-weight: bold;   
+    }
+    .choose{
+        font-size:32rpx;
+        .checkbox{
+            
+           checkbox{
+                margin: 20rpx;
+           }
+        }
+    }
+    .btn{
+        margin: 0 10rpx;
+    }
+    .info{
+        font-size:28rpx;
+        color:orange;
+        margin: 10rpx;
+    }
+}
+</style>
+<template>
+    <view class="user-center-mchnt-list-eidt-type-container">
+        <view class="title">类型关联</view>
+        <view class="choose">
+            <checkbox-group bindchange="checkboxChange">
+                <view class="checkbox" wx:for="{{items}}" wx:key="{{index}}">
+                    <label>
+                        <checkbox value="{{item.name}}" checked="{{item.checked}}"/>{{item.value}}
+                    </label>
+                </view>
+            </checkbox-group>
+        </view>
+        <button class="btn" type="primary" @tap="eidtType">确定修改</button>
+        <view class="info">
+            如果您的类型是多个，我们建议您关联6个以内包含6个类型。如果您关联大于6个，每多关联一个那么排序就会靠后一级。
+        </view>
+    </view>
+</template>
+
+<script>
+import wepy from 'wepy'
+import req from '@/network'
+import { baseUrl } from '@/config/index'
+export default class UserCenterMchntListEditType extends wepy.page {
+
+    data = {
+        mchntInfo: null,
+        typeIds:[],
+        items: []
+    }
+
+    onLoad(params, data) {
+        this.mchntInfo = data.preload.mchntInfo
+        req.get(baseUrl+"type/list",{
+            codes: this.mchntInfo.shopCategoryCode
+        }).then(res => {
+            
+            if(res.code === 0) {
+                let itemsTemp = res.data.map.HOME_REPAIR.map(res=>{
+                    return {
+                        name: res.typeId,
+                        value: res.name
+
+                    }
+                })
+                
+                this.mchntInfo.typeDTOS.map(res=>{
+
+                    itemsTemp.forEach(temp => {
+                        if(temp.name === res.typeId) {
+                            temp.checked = 'true'
+                        }
+                    })
+                    
+
+                })
+
+                this.items = itemsTemp
+                this.$apply()
+            }
+        })
+    }
+ 
+
+    methods =  {
+        eidtType(){
+
+            wx.showLoading({
+                title: '请求中...',
+            })
+            wx.showNavigationBarLoading()
+            req.post(baseUrl+"shopInfoType/binding",{
+                typeIds: this.typeIds.join(",")
+            }).then(res => {
+                wx.hideLoading()
+                wx.hideNavigationBarLoading()
+               
+                if(res.code === 0) {
+
+                    wx.showToast({
+                        title: '成功',
+                        icon: 'success',
+                        duration: 1000
+                    })
+                    
+                    setTimeout(() => {
+                        wx.showModal({
+                            title: '提示',
+                            content: '点击确定返回到【用户中心】',
+                            success: function(res) {
+                                if (res.confirm) {
+                                    wx.switchTab({
+                                        url: './user-center'
+                                    })
+                                } else if (res.cancel) {
+
+                                }
+                            }
+                        })
+                    }, 1000);
+
+                }else{
+                    wx.showToast({
+                        title: '您至少选择一个！',
+                        icon: 'none'
+                    })
+                }
+
+            })
+            
+        },
+        checkboxChange: function(e) {
+            this.typeIds = e.detail.value.map(res=>{
+                return Number(res)
+            })
+        }
+    }
+
+}
+</script>

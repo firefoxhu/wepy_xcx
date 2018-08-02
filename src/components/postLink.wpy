@@ -1,0 +1,51 @@
+<style lang="less">
+    .post-link{
+        position: fixed;
+        width: 100rpx;
+        height: 100rpx;
+        image{
+            width: 100rpx;
+            height: 100rpx;
+        }
+    }
+</style>
+<template>
+   <view class="post-link" style="{{position}}">
+       <navigator open-type="navigate" url="/pages/post" hover-class="notice-hover">
+            <image src="{{icon}}"/>
+        </navigator>
+   </view>
+</template>
+
+
+
+<script>
+/**
+ *goW 即 goWhere  要去哪里？
+ */
+import wepy from 'wepy'
+import req from '@/network'
+
+export default class PostLink extends wepy.component {
+    
+    props = {
+        position:{
+            type:String,
+            default: ''
+        },
+        icon: {
+            type:String,
+            default: ''
+        }
+    }
+
+
+    methods = {
+    }
+
+    onLoad() {
+
+    }
+
+}
+</script>

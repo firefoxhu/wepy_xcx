@@ -1,0 +1,418 @@
+<style lang="less" scoped>
+.mchnt-detail-container{
+    height: 100%;
+    .swiper{
+        image{
+            width: 100%;
+            height: 100%;
+        }
+    }
+    .shop-banner{
+        margin-top:10rpx;
+        height: 80rpx; 
+        background-color: #f8f8f8;
+        text-align: center;
+        font-size:34rpx;
+        font-weight: bold;
+        line-height: 80rpx;
+        text-shadow:0 0 20rpx #2e9fff;
+    }
+    .shop-info{
+        padding-bottom:10rpx; 
+        background-color: #f8f8f8;
+        text-align: center;
+        font-size:26rpx;
+        color:#336666;
+        text:nth-child(2){
+            margin-left:20rpx; 
+        }
+    }
+    .service-content{
+        margin: 10rpx 0;
+        background-color: #f8f8f8;
+        display: flex;
+        align-items: center;
+        padding:10rpx 0 10rpx 10rpx;
+        .label{
+            font-size:30rpx;
+        }
+        .text{
+            flex: 1;
+            font-size: 28rpx;
+            line-height: 32rpx;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            display: -webkit-box;
+            -webkit-line-clamp:4;
+            -webkit-box-orient: vertical;
+        }
+        .arrow{
+            width:40rpx;
+            font-size:36rpx;
+            color:#ccc;
+            text-align: center;
+            padding-right: 10rpx;
+        }
+        .arrow:active{
+            color:orange;
+        }
+    }
+    .address{
+        background-color: #f8f8f8;
+        margin: 10rpx 0;
+        padding:10rpx 0 10rpx 10rpx;
+        display: flex;
+        align-items: center;
+        image{
+            width:40rpx;
+            height: 40rpx;
+        }
+        .text{
+            flex: 1;
+            font-size:26rpx;
+            color:#ccc;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            display: -webkit-box;
+            -webkit-line-clamp:1;
+            -webkit-box-orient: vertical;
+            padding-left:10rpx;
+        }
+        .arrow{
+            width:40rpx;
+            font-size:36rpx;
+            color:#ccc;
+            text-align: center;
+            padding-right: 10rpx;
+        }
+        .arrow:active{
+            color:orange;
+        }
+    }
+    
+    .mchnt-info{
+        padding: 0 10rpx;
+        background-color: #f8f8f8;
+        .tab{
+            display: flex;
+            box-shadow: inset 0px -1px 1px -1px #c8c7cc;
+            view{
+                flex: 1;
+                text-align: center;
+                color:#5f5f5f;
+                font-weight: bold;
+                font-size:34rpx;
+                height: 80rpx;
+                line-height: 80rpx;
+            }
+
+        }
+        .panel{
+            display: flex;
+            text-align: center;
+            padding: 10rpx;
+            .panel-content{
+                width:100%;
+                height: 280rpx;
+                .panel-info1{
+                    flex: 1;
+                    text-indent: 2em;
+                    font-size:30rpx;
+                }
+                .panel-info2{
+                    flex: 1;
+                    color:#ccc;
+                    font-size:24rpx;
+                }
+                .panel-info3{
+                    flex: 1;
+                    color:#ccc;
+                    font-size:24rpx;
+                }
+            }
+        }
+
+    }
+    .gallery{
+        margin: 10rpx 0;
+        background-color: #f8f8f8;
+        .title{
+            display: flex;
+            margin: 0 10rpx;
+            box-shadow: inset 0px -1px 1px -1px #c8c7cc;
+            font-size:34rpx;
+            height: 80rpx;
+            line-height: 80rpx;
+            .text,.more{
+                flex: 1;
+                line-height: 80rpx;
+            }
+            .more{
+                text-align: right;
+                font-size:28rpx;
+                color:#ccc;
+            }
+        }
+        .images{
+            width: 100%;
+            white-space: nowrap;
+            image{
+                width: 280rpx;
+                height: 140rpx;
+                display: inline-block;
+                padding: 10rpx;
+                vertical-align: middle;
+            }
+        }
+    }
+    .footer{
+        box-shadow: inset 1px 1px 1px -1px #c8c7cc;
+        background-color: #f8f8f8;
+        height: 100rpx;
+        width:100%;
+        position:fixed;
+        display: flex;
+        bottom: 0;
+        text-align: center;
+        align-items: center;
+        view,.share-btn{
+            flex: 1;
+            image{
+                width:60rpx;
+                height:60rpx;
+                vertical-align: middle;
+            }
+        }
+
+        .share-btn{
+            height: 100rpx;
+            line-height: 100rpx;
+        }
+        .share-btn::after{
+            border: none;
+        }
+        .button-hover{
+            background-color: #f8f8f8;
+        }
+
+        .concat{
+            height: 100rpx;
+            background-color: orange;
+            color:white;
+            line-height: 100rpx;
+        }
+    }
+
+    .top-to{
+        position: fixed;
+        bottom: 22%;
+        width: 80rpx;
+        height: 80rpx;
+        opacity: 0.8;
+        right:10rpx;
+        border:1px solid #f8f8f8;
+        text-align: center;
+        line-height: 80rpx;
+        border-radius: 50%;
+        background-color: #ffffff;
+        opacity: 0.8;
+        font-size: 28rpx;
+        color:#336666;
+        font-weight: bold;
+        box-shadow: 10rpx 10rpx 10rpx 10rpx rgb(221, 222, 223); 
+    }
+    .top-to:active{
+        color:#000;
+    }
+}
+</style>
+<template>
+  <view class="mchnt-detail-container">
+        <swiper class="swiper" indicator-dots="{{swiperConfig.dots}}"
+            indicator-active-color="#2e9fff"
+            autoplay="{{swiperConfig.autoplay}}" 
+            duration="{{swiperConfig.duration}}"
+            >
+            <block wx:for="{{swiperConfig.list}}" wx:key="{{index}}">
+                <swiper-item>
+                    <image lazy-load="true" mode="scaleToFill"   class="swiper-image" src="{{ item }}"/>
+                </swiper-item>
+            </block>
+        </swiper>
+        <view class="shop-banner">{{shopInfo.shopName}}</view>
+        <view class="shop-info">
+            <text>人气：{{shopInfo.views}}</text>  <text wx:if="{{comeShare === false}}">距离：{{shopInfo.distance}}</text>
+        </view>
+        <view class="service-content">
+            <view class="label">服务内容：</view>
+            <view class="text">{{shopInfo.shopSkillDescription}}</view>
+            <view @tap.stop="viewSkill" class="arrow">></view>
+        </view>
+
+        <view @tap="viewLocation" class="address">
+            <image  src="/assets/images/location.png"/>
+            <view class="text">{{shopInfo.address}}</view>
+            <view @tap.stop="viewAddress" class="arrow">></view>
+        </view>
+        
+        <view class="mchnt-info">
+            <view class="tab">
+                <view style="{{currentIndex === '0' ? 'color:#000;' : ''}}"  @tap.stop="tabShow(0)">门店详情</view>
+                <view style="{{currentIndex === '1' ? 'color:#000;' : ''}}"   @tap.stop="tabShow(1)">留言</view>
+                <view style="{{currentIndex === '2' ? 'color:#000;' : ''}}"  @tap.stop="tabShow(2)">更多</view>
+            </view>
+            <view class="panel">
+                <scroll-view class="panel-content"  scroll-y="true">
+                    <view class="panel-info1" wx:if="{{currentIndex === '0'}}">
+                        {{shopInfo.description === null ? "暂无信息" : shopInfo.description}}
+                    </view>
+                    <view class="panel-info2" wx:if="{{currentIndex === '1'}}">
+                        暂无留言
+                    </view>
+                    <view class="panel-info3"  wx:if="{{currentIndex === '2'}}">暂无信息
+                        七牛云是国内领先的以视觉智能和数据智能为核心的企业级云计算服务商，同时也是国内最有特色的智能视频云服务商，累计为 70 多万家企业提供服务，覆盖了国内80%网民。围绕富媒体场景推出了对象存储、融合 CDN 加速、容器云、大数据平台、深度学习平台等产品、并提供一站式智能视频云解决方案。为各行业及应用提供可持续发展的智能视频云生态，帮助企业快速上云，创造更广阔的商业价值。
+                    </view>
+                </scroll-view>
+            </view>
+        </view>
+        <view class="gallery">
+            <view class="title">
+                <view class="text">商户风采</view>
+                <view class="more">更多>></view>
+            </view>
+            <scroll-view class="images"  scroll-x="true">
+                <image @tap.stop="viewGallery('{{index}}')" mode="aspectFit" wx:for="{{shopInfo.galleryPicture}}" wx:key="{{index}}"  src="{{item}}"/>
+                <view wx:if="{{shopInfo.galleryPicture.length === 0}}" style="color:#ccc;text-align:center;height:80rpx;font-size:28rpx;line-height:80rpx;">暂无图片</view>
+            </scroll-view>
+        </view>
+
+        <view style="height: 100rpx;"></view>
+
+        <view class="footer">
+            <button class="share-btn" open-type="share" hover-class="button-hover">
+                <image  src="/assets/images/xy-share-h.png"/> 分享
+            </button>
+
+            <view class="collect">
+                <image  src="/assets/images/unlike.png"/> 收藏   
+            </view>
+            <view class="message">
+                <image  src="/assets/images/comments.png"/> 私信
+            </view>
+            <view @tap.stop="callPhone" class="concat">
+                联系电话
+            </view>
+        </view>
+        <view wx:if="{{comeShare}}"  class="top-to" @tap.stop="goBack">
+            返回
+        </view>    
+  </view>
+</template>
+
+<script>
+import wepy from 'wepy'
+import req from '@/network'
+import { baseUrl } from '@/config/index'
+
+export default class MchntDetail extends wepy.page {
+
+    data = {
+        shopInfo: null,
+        comeShare: false,
+        swiperConfig:{
+            dots: true,
+            autoplay: false,
+            duration: 500,
+            list:[]
+        },
+        currentIndex: '0'
+    }
+
+    onLoad(params, data) {
+        // 如果从分享进入则调
+        if(data.preload === undefined) {
+            this.comeShare = true
+            req.get(baseUrl+'shop/shopInfo',{shopInfoId:params.shopInfoId}).then(res =>{
+                if(res.code === 0) {
+                    this.shopInfo = res.data.shopInfo
+                    this.swiperConfig.list = this.shopInfo.bannerPicture.map(res=>res.replace('com/','com/S'))
+                }else{
+                    wx.showModal({
+                        title: '系统错误提示',
+                        content: res.msg,
+                        showCancel: false,
+                        confirmText: '忽略'
+                    })
+                }
+            })
+        }else{
+            // fetch cache data 
+            this.shopInfo = data.preload.shopInfo
+            this.swiperConfig.list = this.shopInfo.bannerPicture.map(res=>res.replace('com/','com/S'))
+        }
+        if(this.shopInfo !== null && this.comeShare)
+            req.post(baseUrl+'shopInfo/views?shopInfoId='+this.shopInfo.shopInfoId).then(res =>{})
+    }
+
+    onShareAppMessage(res){
+        return {
+            title: this.shopInfo.shopName,
+            desc: this.shopInfo.shopSkillDescription,
+            path: '/pages/mchnt-detail?shopInfoId='+this.shopInfo.shopInfoId
+        }
+    }
+
+    methods = {
+        goBack(){
+            wx.reLaunch({
+                url: '/pages/mchnt'
+            })
+        },
+        viewGallery(index) {
+            console.log(index)
+            wx.previewImage({
+                // 切换大图
+                current: this.shopInfo.galleryPicture[index].replace('com/','com/S'),
+                urls: this.shopInfo.galleryPicture.map(res=>res.replace('com/','com/S'))
+            })
+        },
+        viewSkill(){
+            wx.showModal({
+                title: '服务内容',
+                content: this.shopInfo.shopSkillDescription,
+                showCancel: false,
+                confirmText: '知道了'
+            })
+        },
+        viewAddress(){
+            wx.showModal({
+                title: '地址查看',
+                content: this.shopInfo.address,
+                showCancel: false,
+                confirmText: '知道了'
+            })
+        },
+        viewLocation(){
+            wx.openLocation({
+                latitude: parseFloat(this.shopInfo.latitude),
+                longitude: parseFloat(this.shopInfo.longitude),
+                scale: 18
+            })
+        },
+        callPhone(){
+            wepy.makePhoneCall({
+                phoneNumber: this.shopInfo.mchntPhone 
+            })
+        },
+        tabShow(index) {
+            this.currentIndex = index
+        }
+    }
+
+    computed = {
+
+    }
+
+
+}
+</script>

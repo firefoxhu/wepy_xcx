@@ -1,0 +1,187 @@
+<style lang="less" scoped>
+.circle-comment-container{
+  .editor{
+    margin: 20rpx 20rpx;
+    padding:10rpx;
+    background-color: #ffffff;
+    border-top-left-radius: 16rpx;
+    border-top-right-radius: 32rpx;
+    border-bottom-left-radius: 32rpx;
+    border-bottom-right-radius: 16rpx;
+    textarea{
+      width:100%;
+      border-bottom:2rpx solid rgb(240, 237, 237);
+    }
+    .footer{
+      margin-top: 20rpx;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      .location{
+        font-size:32rpx;
+        i{
+          font-size:40rpx;
+          margin-right: 6rpx;
+        }
+      }
+      .submit{
+        button{
+          background-color: orange;
+          color:#ffffff;
+          font-size:28rpx;
+          i{
+            font-size:28rpx;
+          }
+        }
+      }
+      
+    }
+
+    .anonymous{
+      text-align: right;
+      font-size: 32rpx;
+      margin-top: 8rpx;
+    }
+
+  }
+}
+</style>
+<template>
+  <view class="circle-comment-container">
+    <view class="editor">
+      <textarea 
+        bindblur="bindTextAreaBlur" 
+        placeholder="您评论的信息会被我们信阳网友浏览，请文明发言。"
+        placeholder-style="font-size:24rpx;"
+        maxlength="512"
+        auto-focus="true"
+        show-confirm-bar="true"
+        bindconfirm="bindconfirm"
+        name="textarea"/>
+
+        <view class="anonymous">
+          <checkbox-group bindchange="anonymousChange">
+            <label>
+              <checkbox/>匿名
+            </label>
+          </checkbox-group>
+        </view>
+        <view class="footer">
+          <view class="location" @tap.stop="selectLocation">
+            <i class="iconfont icon-dizhi"/>{{location}}
+          </view>
+          <view class="submit">
+            <button wx:if="{{ anonymous === '0'}}" size="mini"  form-type="submit" open-type="getUserInfo" bindgetuserinfo="commentArticle">评论<i class="iconfont icon-anquanfabu"/></button>
+            <button wx:if="{{ anonymous === '1'}}" size="mini" @tap.stop="commentAnonymousArticle">匿名评论<i class="iconfont icon-anquanfabu"/></button>
+          </view>
+        </view>
+    </view>
+  </view>
+</template>
+
+<script>
+  import wepy from 'wepy'
+  import req from '@/network'
+  import { baseUrl } from '@/config/index'
+  export default class CircleComment extends wepy.page {
+
+    config = {
+      navigationBarTitleText: '消息评论',
+      enablePullDownRefresh: false
+    }
+
+    data = {
+      articleId: null,
+      location: "信阳市（默认）",
+      anonymous: '0',
+      content: ""
+    }
+
+    onLoad(params, data) {
+      // fetch cache data 
+      this.articleId = data.preload.article.articleId
+    }
+
+    commentArticle(){
+      if(this.content.length <= 3) {
+        wx.showToast({
+          title: '请写一句话吧（3个字以上）...',
+          icon: 'none',
+          duration: 2000
+        })
+        return
+      }
+
+      let params = {
+        content: this.content,
+        location: this.location,
+        anonymous: this.anonymous
+      }
+
+      if(this.anonymous === '0') {
+        params.nickname = this.$parent.globalData.userInfo.nickName
+        params.avatar = this.$parent.globalData.userInfo.avatarUrl
+      }
+
+      if(this.articleId === null) {
+        return
+      }
+
+      params.articleId = this.articleId
+
+
+      wx.showLoading({
+        title: '留言投递中...',
+        mask:true,
+      })
+
+      req.post(baseUrl+"comment/write",params).then(res => {
+        wx.hideLoading()
+        if(res.code === 0) {
+          // 返回刷新的标志
+          wx.setStorageSync('commented',res.data)
+          wx.navigateBack()
+        }else{
+          wx.showToast({
+            title: '评论失败【请退出重新进入小程序】...',
+            icon: 'none',
+            duration: 2000
+          })
+        }
+      })
+
+    }
+
+
+    methods = {
+      commentAnonymousArticle(){
+        this.commentArticle()
+      },
+      commentArticle(e){
+        if(e.detail.userInfo) {
+          this.$parent.globalData.userInfo = e.detail.userInfo
+          this.commentArticle()
+        }
+      },
+      anonymousChange(e){
+        if(e.detail.value.length === 0) {
+          this.anonymous = '0'
+        }else{
+          this.anonymous = '1'
+        }
+      },
+      bindTextAreaBlur(e){
+        this.content = e.detail.value
+      },
+      selectLocation(){
+        wx.chooseLocation({
+          success: res=> {
+            this.location = res.name
+            this.$apply()
+          }
+        })
+      }
+    }
+
+  }
+</script>

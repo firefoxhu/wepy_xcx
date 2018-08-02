@@ -1,0 +1,417 @@
+<style lang="less" scoped>
+.mchnt-list-container{
+    .notice{
+        margin: 10rpx 0;
+        display: flex;
+        align-items: center;
+        padding: 4rpx;
+        background-color: #f8f8f8;
+        height: 60rpx;
+        .icon{
+            height: 60rpx;
+            width:48rpx;
+            i{
+                font-size:40rpx;
+                color:orange;
+            }
+        }
+        .swiper{
+            height: 40rpx;
+            flex: 1;
+            .text{
+                font-size:28rpx;
+            }
+        }
+    }
+    .mchnt-new{
+        background-color: #f8f8f8;
+        .title{
+            font-size:28rpx;
+            color:#000;
+            font-weight: bold;
+            padding: 0 10rpx;
+        }
+        .new-content{
+            width: 100%;
+            white-space: nowrap;
+            .item{
+                display: inline-block;
+                image{
+                    width:320rpx;
+                    height: 180rpx;
+                    padding: 10rpx;
+                }
+                .name{
+                    font-size:26rpx;
+                    color:#778899;
+                    text-align: center;
+                    font-weight: bolder;
+                    margin-top: -20rpx; 
+                }
+            }
+        }
+    }
+    .mchnt-list{
+
+        
+        .item{
+            background-color: #f8f8f8;
+            display: flex;
+            border:1px solid #ffffff;
+            align-items: center;
+            margin: 10rpx;
+            height: 240rpx;
+            image{
+                width: 260rpx;
+                height: 180rpx;
+            }
+            .content{
+                padding: 0 4rpx;
+                flex: 1;
+                display: flex;
+                justify-content: space-between;
+                flex-direction: column;
+                height: 220rpx;
+                .body{
+                    height: 180rpx;
+                    display: flex;
+                    justify-content: space-between;
+                    flex-direction: column;
+                    .title{
+                        font-size:32rpx;
+                        color:#778899;
+                        line-height: 35rpx;
+                        overflow: hidden;
+                        text-overflow: ellipsis;
+                        display: -webkit-box;
+                        -webkit-line-clamp:4;
+                        -webkit-box-orient: vertical;
+                    }
+                    .address{
+                        font-size:20rpx;
+                        color:#ccc;
+                        overflow: hidden;
+                        text-overflow: ellipsis;
+                        display: -webkit-box;
+                        -webkit-line-clamp:1;
+                        -webkit-box-orient: vertical;
+                        image{
+                            width:30rpx;
+                            height: 30rpx;
+                            vertical-align: text-bottom;
+                        }
+
+                    }
+                }
+            }
+            .info{
+                padding-top: 6rpx;
+                display: flex;
+                justify-content: space-between;
+                .views{
+                    font-size:20rpx;
+                    color:#ccc;
+                    image{
+                        height: 20rpx;
+                        width: 20rpx;
+                        vertical-align: text-bottom;
+                    }
+                }
+                .distance{
+                    font-size:22rpx;
+                    color:#5b5b5b;
+                }
+                .concat{
+                    font-size:28rpx;
+                    background-color: orange;
+                    color:white;
+                    border-radius: 16rpx;
+                    padding: 4rpx;
+                }
+                .views,.distance,.concat{
+                    margin: auto 0;
+                }
+                
+            }
+        }
+
+        .loading{
+            margin: 10rpx;
+            background-color: #f8f8f8;
+            text-align: center;
+            height: 120rpx;
+            line-height: 120rpx;
+            font-size:30rpx;
+            color:#ccc;
+            image{
+                width:120rpx;
+                height: 120rpx;
+                vertical-align: middle;
+            }
+        }
+    }
+}
+</style>
+<template>
+    <view class="mchnt-list-container">
+        <view class="notice">
+            <view class="icon">
+                <i class="iconfont icon-gonggaoxiaoxi-"></i>
+            </view>
+            <swiper
+                class="swiper"
+                circular
+                vertical
+                autoplay="{{swiperConfig.autoplay}}" 
+                interval="{{swiperConfig.interval}}" 
+                duration="{{swiperConfig.duration}}">
+                <block wx:for="{{swiperConfig.data.list}}" wx:key="{{index}}">
+                    <swiper-item>
+                        <view class="text">
+                            {{item}}
+                        </view>
+                    </swiper-item>
+                </block>
+            </swiper>
+        </view>
+
+        <view class="mchnt-new">
+            <view class="title">最新入住</view>
+            <scroll-view class="new-content"  scroll-x="true">
+                <view @tap.stop="selectItem" class="item" wx:for="{{newMchnt}}" wx:key="{{index}}">
+                    <view class="pic">
+                        <image lazy-load="true" src="http://luosen365.com/image/20180425/1524639781449.jpg"/>
+                    </view>
+                    <view class="name">信阳家电维修</view>
+                </view>
+            </scroll-view>
+        </view>
+
+        <view class="mchnt-list">
+            <view @tap.stop="selectItem('{{index}}')" class="item" wx:for="{{shopCategoryOrTypeConfig.list}}" wx:key="{{index}}">
+                <image @tap.stop="previewImage('{{index}}')" lazy-load="true" src="{{item.bannerPicture[0]}}"/>
+                <view class="content">
+                    <view class="body">
+                        <view class="title">{{item.shopSkillDescription}}</view>
+                        <view class="address">
+                            <image src="/assets/images/gps.png"/>{{item.address}}
+                        </view>
+                    </view>
+                    <view class="info">
+                        <view class="views">
+                            <image src="/assets/images/views.png"/>{{item.views}}浏览
+                        </view>
+                        <view class="distance">距约{{item.distance}}</view>
+                        <view @tap.stop="callPhone('{{item.mchntPhone}}')" class="concat">联系商家</view>
+                    </view>
+                </view>
+            </view>
+            <view class="loading">
+                <image wx:if="{{shopCategoryOrTypeConfig.list.length === 0}}" src="/assets/images/no-comment.png"/>{{shopCategoryOrTypeConfig.loading.tip}}
+            </view>
+        </view>
+        
+    </view>
+</template>
+
+<script>
+import wepy from 'wepy'
+import req from '@/network'
+import { baseUrl } from '@/config/index'
+
+export default class MchntList extends wepy.page {
+
+    data = {
+        location:{
+            latitude:0,
+            longitude:0
+        },
+        query:{
+            url:'',
+            params:{}
+        },
+        newMchnt:[3,21,3,32,1,321,23,21,1],
+        swiperConfig:{
+            autoplay: true,
+            interval: 2000,
+            duration: 500,
+            data:{
+                list:[
+                    '好消息！信阳365服务正式营业进口量发大水',
+                    '商户免费入住，简单入住增加曝光率，给你补一定的额商户免费入住，简单入住增加曝光率，给你补一定的额',
+                    'http://luosen365.com/image/20180425/1524639781449.jpg'
+                ]
+            }
+        },
+        shopCategoryOrTypeConfig:{
+            loading:{
+                hasMore: true,
+                tip: '加载中...'
+            },
+            page:{
+                index: 0,
+                size: 6
+            },
+            list:[]
+        },
+        newShopConfig:{
+
+        }
+    }
+
+    onLoad(params, data) {
+        wx.showLoading({
+            title: '加载中',
+        })
+        wx.showNavigationBarLoading()
+        // fetch cache data 
+        if(data.preload){
+
+            if(isNaN(data.preload.typeIdOrCagoryCode)){
+                this.query.url = 'shop/list'
+                if(data.preload.typeIdOrCagoryCode !== undefined){
+                    this.query.params.categoryCode = data.preload.typeIdOrCagoryCode
+                }
+                if(data.preload.model !== undefined){
+                    this.query.params.model = data.preload.model
+                }
+            }else{
+                this.query.url = 'shop/shopInfo/type'
+                this.query.params.typeId = data.preload.typeIdOrCagoryCode
+            }
+
+            this.initShopByCategoryCode()
+        }
+
+        wepy.getLocation({type: 'wgs84'}).then(res => {
+            this.location.latitude = res.latitude
+            this.location.longitude = res.longitude
+            this.$apply()
+        }).catch(res=>{
+            console.log("位置未授权")
+        })
+
+    }
+
+    initShopByCategoryCode(){
+
+        this.shopCategoryOrTypeConfig.page.index = 0
+
+        this.query.params.page = 0 
+        this.query.params.size = this.shopCategoryOrTypeConfig.page.size
+      
+        req.get(baseUrl + this.query.url,this.query.params).then(res => {
+            wx.hideLoading()
+             wx.hideNavigationBarLoading()
+            if(res.code === 0){
+                this.shopCategoryOrTypeConfig.list = res.data.list
+                this.shopCategoryOrTypeConfig.loading.hasMore = res.data.hasNext
+                this.shopCategoryOrTypeConfig.loading.tip = res.data.list.length === 0 ? '暂无数据~' : (res.data.hasNext ? '商户信息加载中...' : '已加载全部推荐商户~')
+                this.$apply()
+            }else{
+                wx.showModal({
+                    title: '请求结果提示',
+                    content: res.msg,
+                    showCancel: false,
+                    confirmText: '忽略'
+                })
+            }
+        })
+
+    }
+
+    nextShopByCategoryCode(){
+        if(!this.shopCategoryOrTypeConfig.loading.hasMore){
+            return
+        }
+
+        this.query.params.page = ++this.query.params.page
+        req.get(baseUrl + this.query.url,this.query.params).then(res => {
+            wx.hideLoading()
+             wx.hideNavigationBarLoading()
+            if(res.code === 0){
+                this.shopCategoryOrTypeConfig.list = res.data.list
+                this.shopCategoryOrTypeConfig.loading.hasMore = res.data.hasNext
+                this.shopCategoryOrTypeConfig.loading.tip = res.data.hasNext ? '商户信息加载中...' : '已加载全部推荐商户~'
+                this.$apply()
+            }else{
+                wx.showModal({
+                    title: '请求结果提示',
+                    content: res.msg,
+                    showCancel: false,
+                    confirmText: '忽略'
+                })
+            }
+        })
+    }
+
+    onReachBottom() {
+      // more article
+      this.nextShopByCategoryCode()
+    }
+
+    methods =  {
+        previewImage(pos) {
+            wx.previewImage({
+                // 切换大图
+                current: this.shopCategoryOrTypeConfig.list[pos].bannerPicture[0].replace('com/','com/S'),
+                urls: this.shopCategoryOrTypeConfig.list[pos].bannerPicture.map(res=>res.replace('com/','com/S'))
+            })
+        },
+        callPhone(phone){
+            wepy.makePhoneCall({
+                phoneNumber: phone 
+            })
+        },
+        selectItem(pos){
+            this.shopCategoryOrTypeConfig.list[pos].views = this.shopCategoryOrTypeConfig.list[pos].views + 1
+            req.post(baseUrl+'shopInfo/views?shopInfoId='+this.shopCategoryOrTypeConfig.list[pos].shopInfoId).then(res =>{})
+
+
+            this.$preload("shopInfo",this.shopCategoryOrTypeConfig.list[pos])
+            this.$navigate("./mchnt-detail")
+        }
+    }
+
+    // 156 3900 4310
+    
+    computed = {
+
+        cacleDistance(){
+
+            return this.shopCategoryOrTypeConfig.list.map(res=>{
+
+                res.distance = this.getDistance(this.location.latitude,this.location.longitude,res.latitude,res.longitude)
+                
+                return res
+            })
+        }
+    }
+
+
+    getDistance(lat1, lng1, lat2, lng2) {
+        lat1 = lat1 || 0;  
+        lng1 = lng1 || 0;  
+        lat2 = parseFloat(lat2) || 0;  
+        lng2 = parseFloat(lng2) || 0;  
+
+        var rad1 = lat1 * Math.PI / 180.0;  
+        var rad2 = lat2 * Math.PI / 180.0;  
+        var a = rad1 - rad2;  
+        var b = lng1 * Math.PI / 180.0 - lng2 * Math.PI / 180.0;  
+
+        var r = 6378137;  
+        var distance = r * 2 * Math.asin(Math.sqrt(Math.pow(Math.sin(a / 2), 2) + Math.cos(rad1) * Math.cos(rad2) * Math.pow(Math.sin(b / 2), 2)));  
+        
+        if (distance > 1000){  
+            distance = (distance / 1000).toFixed(1) + "千米";  
+        }else{
+            distance = distance.toFixed(1) + '米'
+        }
+
+        return distance;  
+    }
+
+
+}
+</script>

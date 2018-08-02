@@ -1,0 +1,87 @@
+<style lang="less" scoped>
+.mchnt-more-container{
+    .more-box{
+        background-color: #ffffff;
+        padding: 10rpx;
+        .item{
+            .category{
+                font-size:36rpx;
+                font-weight: 600;
+                box-shadow: inset 0px -1px 1px -1px #c8c7cc;
+                color:#5b5b5b;
+            }
+            .types{
+                display: flex;
+                flex-wrap: wrap;
+                justify-content: flex-start;
+                font-size:32rpx;
+                .type{
+                    padding: 10rpx;
+                    margin: 10rpx;
+                    font-weight: 300;
+                    text-align: center; 
+                    background-color: #f8f8f8;
+                    box-shadow: inset 1px 1px 20px 1px #c8c8c8;
+                }
+                .type:active{
+                    color:white;
+                    font-weight: 300;
+                    background-color: orange;
+                }
+            }
+        }
+    }
+}
+</style>
+<template>
+  <view class="mchnt-more-container">
+      <view class="more-box">
+        <view class="item"  wx:for="{{categoryTypeConfig.list}}" wx:key="{{index}}">
+            <view class="category">{{item.name}}</view>
+            <view class="types" >
+                <view  class="type"  wx:for="{{item.typeDTOS}}" wx:for-item="type" wx:key="{{index}}">
+                    <view @tap.stop="selectType('{{type.typeId}}')">{{type.name}}</view>
+                </view>
+            </view>
+        </view>
+      </view>
+  </view>
+</template>
+<script>
+import wepy from 'wepy'
+import req from '@/network'
+import { baseUrl } from '@/config/index'
+
+export default class MchntMore extends wepy.page {
+
+    data = {
+        categoryTypeConfig:{
+            list:[]
+        }
+    }
+
+
+    initCategoryType(){
+        req.get(baseUrl+'category/listWithType').then(res=>{
+             wx.hideLoading()
+            if(res.code === 0) {
+                this.categoryTypeConfig.list = res.data.list
+                this.$apply()
+            }
+        })
+    }
+
+    onLoad() {
+        wx.showLoading({
+            title: '加载中',
+        })
+        this.initCategoryType()
+    }
+    methods =  {
+        selectType(typeId){
+            this.$preload("typeIdOrCagoryCode",typeId)
+            this.$navigate("./mchnt-list")
+        }  
+    }
+}
+</script>

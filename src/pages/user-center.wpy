@@ -1,0 +1,248 @@
+<style lang="less" scoped>
+.user-center-container{
+  .user-info{
+    height: 80rpx;
+    background-color: #2e9fff;
+    .avatar{
+      position: absolute;
+      height: 160rpx;
+      width: 160rpx;
+      border-radius: 50%;
+      overflow: hidden;
+      right: 20rpx;
+    }
+  }
+  .user-name{
+    background-color: #ffffff;
+    color:#2e9fff;
+    height: 80rpx;
+    line-height: 80rpx;
+    font-size:38rpx;
+    padding: 0 20rpx; 
+  }
+
+  .panel{
+    background-color: #f8f8f8;
+    padding: 20rpx 0;
+    height: 100%;
+    .message{
+      background-color: #ffffff;
+      height: 120rpx;
+      display: flex;
+      justify-content: flex-start;
+      align-items: center;
+      image{
+        height: 120rpx;
+        width: 120rpx;
+      }
+      .title{
+        flex:1;
+        font-size:36rpx;
+      }
+      .info{
+        font-size:24rpx;
+        color:blue;
+        margin-right: 20rpx;
+      }
+    }
+    .mchnt{
+      background-color: #ffffff;
+      height: 120rpx;
+      display: flex;
+      justify-content: flex-start;
+      align-items: center;
+      image{
+        height: 100rpx;
+        width: 100rpx;
+        padding: 0 10rpx;
+      }
+      .title{
+        flex:1;
+        font-size:36rpx;
+      }
+      .info{
+        font-size:24rpx;
+        color:orange;
+        margin-right: 20rpx;
+        text-decoration-line: underline;
+      }
+    }
+    
+    button::after{
+      outline:none;
+      border:none;
+      list-style: none;
+      
+    }
+    .contact{
+      border-radius: 0;
+      background-color: #ffffff;
+      height: 120rpx;
+      display: flex;
+      justify-content: flex-start;
+      align-items: center;
+      image{
+        height:100rpx;
+        width: 100rpx;
+        margin:0 10rpx 0 -17rpx;
+      }
+      .title{
+        text-align: left;
+        font-size:36rpx;
+        flex:1;
+      }
+    }
+    .message:active{
+      opacity: 0.6;
+    }
+    .mchnt:active{
+      opacity: 0.6;
+    }
+    .contact:active{
+      opacity: 0.6;
+    }
+    .message,.mchnt,.contact{
+      margin: 10rpx;
+    }
+    .join-us{
+      height: 120rpx;
+      font-size:24rpx;
+      color:#aaa;
+      line-height: 120rpx;
+      text-align: right;
+    }
+  }
+
+  
+}
+</style>
+<template>
+  <view class="user-center-container">
+    <view class="user-info">
+      <view class="avatar">
+        <open-data type="userAvatarUrl"></open-data>
+      </view>
+    </view>
+    <view class="user-name">
+      <open-data type="userNickName"></open-data>
+    </view>
+
+    <view class="panel">
+
+      <view class="message" @tap="personalCircle">
+        <image src="/assets/images/ss-list.png"/>
+        <view class="title">个人说说</view>
+        <view class="info">共发表{{countArticle}}篇说说</view>
+      </view>
+
+      <view class="message" @tap="messageCenter">
+        <image src="/assets/images/message-u.png"/>
+        <view class="title">消息中心</view>
+        <view class="info">2条未读</view>
+      </view>
+
+      <view class="mchnt" @tap="mchntInfo">
+        <image src="/assets/images/mchnt_m.png"/>
+        <view class="title">商户信息</view>
+        <view wx:if="{{mchntSetting.show}}" class="info">{{mchntSetting.text}}</view>
+      </view>
+
+      <button class="contact" open-type="contact">
+        <image src="/assets/images/concat-s.png"/>
+        <view class="title">联系客服</view>
+        <view class="info"></view>
+      </button>
+
+      <view class="join-us">
+        我们还是一支年轻的团队，加入我们一起创造。
+      </view>
+
+      
+
+
+    </view>
+    
+    
+  </view>
+</template>
+
+<script>
+import wepy from 'wepy'
+import req from '@/network'
+import { baseUrl } from '@/config/index'
+export default class UserCenter extends wepy.page {
+
+  config = {
+    enablePullDownRefresh: true,
+    backgroundColor: '#2e9fff',
+    navigationBarBackgroundColor: '#2e9fff',
+    navigationBarTitleText: '信阳365服务'
+  }
+
+  data = {
+    mchntSetting:{
+      show: false,
+      text: '点击入住商户'
+    },
+    messageUnRead: 0,
+    countArticle: 0
+  }
+
+  onLoad() {
+    //  统计当前登录用户发表说说数据
+    req.get(baseUrl+"article/countArticle").then(res => {
+      if(res.code === 0){
+        this.countArticle = res.data.countArticle
+      }
+      this.$apply()
+    })
+
+    // 统计消息中心未阅读的数据
+    req.get(baseUrl+"message/unReaderCount").then(res => {
+      if(res.code === 0){
+        this.messageUnRead = res.data.unReadCount
+      }
+      this.$apply()
+    })
+
+    // 判断当前的微信是否绑定商户
+    req.get(baseUrl+"mchnt/binding").then(res => {
+      if(res.code === 0){
+        this.mchntSetting.text = ''
+      }else{
+        this.mchntSetting.text = '点击入住商户'
+        this.mchntSetting.show = true
+      }
+      this.$apply()
+    }) 
+
+    // OK
+
+  }
+
+  onPullDownRefresh() {
+    setTimeout(() => {
+      this.onLoad()
+      wx.stopPullDownRefresh()
+    }, 1000);
+  }
+
+
+
+  methods =  {
+    mchntInfo(){
+      //页面跳转
+      this.$navigate("./user-center-mchnt-list")
+    },
+    personalCircle(){
+      //页面跳转
+      this.$navigate("./user-center-circle")
+    },
+    messageCenter(){
+      //页面跳转
+      this.$navigate("./user-center-message")
+    }       
+  }
+
+}
+</script>
