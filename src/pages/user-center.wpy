@@ -138,7 +138,7 @@
       <view class="message" @tap="messageCenter">
         <image src="/assets/images/message-u.png"/>
         <view class="title">消息中心</view>
-        <view class="info">2条未读</view>
+        <view class="info">{{messageUnRead}}条未读</view>
       </view>
 
       <view class="mchnt" @tap="mchntInfo">

@@ -1,24 +1,105 @@
 <style lang="less" scoped>
 .user-center-circle-container{
-
+    background-color: #ffffff;
+    height: 100%;
+    .item{
+        padding: 10rpx 0;
+        background-color: #ffffff;
+        .time-line{
+            display:flex;
+            width: 50%;
+            margin: 10rpx auto;
+            border:1px solid #cccccc;
+            border-radius: 32rpx;
+            padding:0 20rpx;
+            justify-content: space-between;
+            align-items: center;
+            background-color: #e4e1e1;
+            height: 60rpx;
+            .time{
+                color:orange;
+                font-size:32rpx;
+            }
+            .remove{
+                color:#cccccc;
+                font-size:32rpx;
+                text-align: center;
+            }
+            .remove:active{
+                color:orange;
+            }
+        }
+        .line{
+            margin: 0 auto;
+            height:120rpx;
+            width: 6rpx;
+            background-color: orange;
+        }
+    }
 }
 </style>
 <template>
     <view class="user-center-circle-container">
-        <view>个人说说中心</view>
+        <view class="item">
+            <block wx:for="{{articleConfig.list}}" wx:key="{{index}}">
+                <view class="time-line" @tap="selectItem('{{index}}')">
+                    <view class="time">{{item.timeLine}}</view>
+                    <view @tap.stop="remove('{{index}}')" class="remove">x</view>
+                </view>
+                <view class="line"></view>
+            </block>
+        </view>
     </view>
 </template>
 
 <script>
 import wepy from 'wepy'
+import req from '@/network'
+import { baseUrl } from '@/config/index'
 export default class UserCenterCircle extends wepy.page {
+
+    config = {
+        enablePullDownRefresh: true,
+        backgroundColor: '#FFFFFF',
+        navigationBarBackgroundColor: '#2e9fff',
+        navigationBarTitleText: '我发表的说说'
+    }
 
     data = {
 
-
+        articleConfig:{
+            page:{
+                index: 0,
+                size: 8
+            },
+            loading:{
+                hasMore: true,
+                tip: '加载中...'
+            },
+            list:[]
+        }
     }
+
+    initArticle(){
+
+        this.articleConfig.page.index = 0
+
+        req.get(baseUrl+"article/listOwner",{
+            page: this.articleConfig.page.index,
+            size: this.articleConfig.page.size
+        }).then(res => {
+            console.log(res)
+            if(res.code === 0){
+                this.articleConfig.list = res.data.list
+                this.articleConfig.loading.hasMore = res.data.hasNext
+                this.articleConfig.loading.tip = (res.data.list.length != 0) && res.data.hasNext  ? '消息加载中...' : ((res.data.list.length === 0) ? '暂无消息~' : '已加载全部消息...')
+                this.$apply()
+            }
+        })
+    }
+
     onLoad() {
-        
+        this.initArticle()
     }
 
 

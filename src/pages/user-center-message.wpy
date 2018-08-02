@@ -1,29 +1,155 @@
 <style lang="less" scoped>
 .user-center-message-container{
+    background-color: #ffffff;
+    height: 100%;
+    .message-box{
+        .item{
+            margin:0 10rpx;
+            height: 90rpx;
+            box-shadow: inset 0px -1px 1px -1px #c8c7cc;
+            //background-color: #f8f8f8;
+            .content{
+                color:rgb(134, 84, 7);
+                font-size:32rpx;
+                font-weight: bold;
+                overflow: hidden;
+                text-overflow: ellipsis;
+                display: -webkit-box;
+                -webkit-line-clamp:1;
+                -webkit-box-orient: vertical;
+            }
+            .time{
+                color:#cccccc;
+                font-size:24rpx;
+                text-align: right;
+            }
+        }
+        .item:active{
+            opacity: 0.6;
+        }
 
+        .loading{
+            text-align: center;
+            font-size:28rpx;
+            color:#c8c8c8;
+        }
+    }
+    .readed{
+        background-color: #f8f8f8;
+    }
 }
 </style>
 <template>
     <view class="user-center-message-container">
-        <view>消息中心</view>
+        <view class="message-box">
+            <block wx:for="{{messageConfig.list}}" wx:key="{{index}}">
+                <view @tap="viewMessage('{{index}}')" class="item {{item.isRead === '0' ? 'readed' : ''}}">
+                    <view class="content">{{item.content}}</view>
+                    <view class="time">{{item.dateTime}}</view>
+                </view>
+            </block>
+            <view class="loading">{{messageConfig.loading.tip}}</view>
+        </view>
     </view>
 </template>
 
 <script>
 import wepy from 'wepy'
+import req from '@/network'
+import { baseUrl } from '@/config/index'
 export default class UserCenterMessage extends wepy.page {
 
-    data = {
+    config = {
+        enablePullDownRefresh: true,
+        backgroundColor: '#FFFFFF',
+        navigationBarBackgroundColor: '#2e9fff',
+        navigationBarTitleText: '消息中心'
+    }
 
+
+    data = {
+        messageConfig:{
+            page:{
+                index: 0,
+                size: 8
+            },
+            loading:{
+                hasMore: true,
+                tip: '加载中...'
+            },
+            list:[]
+        }
+    }
+
+
+    initMesssage(){
+
+        this.messageConfig.page.index = 0
+
+        req.get(baseUrl+"message/list",{
+            page: this.messageConfig.page.index,
+            size: this.messageConfig.page.size
+        }).then(res => {
+            
+            if(res.code === 0){
+                this.messageConfig.list = res.data.list
+                this.messageConfig.loading.hasMore = res.data.hasNext
+                this.messageConfig.loading.tip = (res.data.list.length != 0) && res.data.hasNext  ? '消息加载中...' : ((res.data.list.length === 0) ? '暂无消息~' : '已加载全部消息...')
+                this.$apply()
+            }
+        })
     }
 
     onLoad() {
+        this.initMesssage()
+    }
+
+    onPullDownRefresh() {
         
+        setTimeout(() => {
+        this.onLoad()
+            wx.stopPullDownRefresh()
+        }, 1000);
     }
 
 
 
     methods =  {
+        viewMessage(pos){
+
+            wx.showModal({
+                title: '邮件信息',
+                content: this.messageConfig.list[pos].content,
+                cancelText: '删除',
+                cancelColor: 'red',
+                confirmText: '已阅',
+                success:res=>{
+                    if (res.confirm) {
+                        if(this.messageConfig.list[pos].isRead === '1'){
+                            
+                            req.post(baseUrl+"message/readed",{
+                                messageId: this.messageConfig.list[pos].id
+                            }).then(res => {
+                                if(res.code === 0){
+                                    this.messageConfig.list[pos].isRead = '0'
+                                    this.$apply()
+                                }
+                                this.onPullDownRefresh()
+                            })
+                        }
+                    } else if (res.cancel) {
+                        wx.showNavigationBarLoading()
+                        req.post(baseUrl+"message/remove",{
+                            messageId: this.messageConfig.list[pos].id
+                        }).then(res => {
+                            this.onPullDownRefresh()
+                            wx.hideNavigationBarLoading() 
+                        })
+                    }
+                }
+            })
+            
+        }
         
     }
 

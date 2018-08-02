@@ -28,7 +28,7 @@ import { baseUrl } from '@/config'
 export default class extends wepy.app {
   config = {
     pages: [
-      
+      'pages/user-center-circle',
       'pages/user-center',
       'pages/user-center-mchnt-list',
       'pages/user-center-mchnt-list-info',
@@ -53,8 +53,7 @@ export default class extends wepy.app {
       'pages/post',
       'pages/index-article-detail',
       'pages/index-category',
-      'pages/user-center-message',
-      'pages/user-center-circle',
+       'pages/user-center-message',
 
       'pages/video' 
     ],
