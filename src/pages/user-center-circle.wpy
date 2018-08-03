@@ -29,11 +29,22 @@
                 color:orange;
             }
         }
-        .line{
+        .line{ 
             margin: 0 auto;
             height:120rpx;
             width: 6rpx;
             background-color: orange;
+        }
+        .time-line:active{
+            background-color: orange;
+            .time,.remove{
+                color:white;
+            }
+        }
+        .loading{
+            text-align: center;
+            font-size:32rpx;
+            color:#c8c8c8;
         }
     }
 }
@@ -43,11 +54,12 @@
         <view class="item">
             <block wx:for="{{articleConfig.list}}" wx:key="{{index}}">
                 <view class="time-line" @tap="selectItem('{{index}}')">
-                    <view class="time">{{item.timeLine}}</view>
+                    <view class="time">{{item.createTime}}</view>
                     <view @tap.stop="remove('{{index}}')" class="remove">x</view>
                 </view>
                 <view class="line"></view>
             </block>
+            <view class="loading">{{articleConfig.loading.tip}}</view>
         </view>
     </view>
 </template>
@@ -80,7 +92,15 @@ export default class UserCenterCircle extends wepy.page {
         }
     }
 
-    initArticle(){
+    onPullDownRefresh() {
+        wx.showNavigationBarLoading()
+        wx.showLoading({
+            title: '加载中',
+        })
+        this.initArticleTimeLine() 
+    }
+
+    initArticleTimeLine(){
 
         this.articleConfig.page.index = 0
 
@@ -88,7 +108,9 @@ export default class UserCenterCircle extends wepy.page {
             page: this.articleConfig.page.index,
             size: this.articleConfig.page.size
         }).then(res => {
-            console.log(res)
+            wx.hideLoading()
+            wx.hideNavigationBarLoading()
+            wx.stopPullDownRefresh()
             if(res.code === 0){
                 this.articleConfig.list = res.data.list
                 this.articleConfig.loading.hasMore = res.data.hasNext
@@ -98,13 +120,80 @@ export default class UserCenterCircle extends wepy.page {
         })
     }
 
+    nextArticleTimeLine(){
+        if( !this.articleConfig.loading.hasMore){
+            return
+        }
+        wx.showNavigationBarLoading()
+        req.get(baseUrl+'article/listOwner',{
+            page: ++ this.articleConfig.page.index,
+            size: this.articleConfig.page.size
+        }).then(res => {
+            wx.hideNavigationBarLoading()
+            if(res.code === 0){
+                this.articleConfig.list = this.articleConfig.list.concat(res.data.list)
+                this.articleConfig.loading.hasMore = res.data.hasNext
+                this.articleConfig.loading.tip = res.data.hasNext ? '消息加载中...' : '已加载全部消息~'
+                this.$apply()
+            }
+        })
+    }
+
+    onReachBottom() {
+      // more article
+      this.nextArticleTimeLine()
+    }
+
     onLoad() {
-        this.initArticle()
+        this.initArticleTimeLine()
     }
 
 
 
     methods =  {
+        selectItem(pos){
+            //页面跳转
+            this.$preload("article",this.articleConfig.list[pos])
+            this.$navigate("./circle-detail")
+        },
+        remove(pos){
+            wx.showModal({
+                title: '说说删除提醒',
+                content: '删除的说说将无法恢复，您确定删除吗？',
+                cancelText: '确定',
+                cancelColor: 'red',
+                confirmText: '算了吧',
+                success:res=>{
+                    if (res.confirm) {
+                        
+                    } else if (res.cancel) {
+                        
+                        wx.showLoading({
+                            title: '加载中',
+                        })
+                        req.post(baseUrl+"article/remove",{
+                            articleId: this.articleConfig.list[pos].articleId
+                        }).then(res => {
+                            wx.hideLoading()
+                            if(res.code === 0) {
+                                this.articleConfig.list.splice(pos, 1)
+                                this.$apply()
+                                wx.showToast({
+                                    title: res.data.message,
+                                    icon: 'none'
+                                })
+                            }else{
+                                wx.showToast({
+                                    title: res.msg,
+                                    icon: 'none'
+                                })
+                            }
+                        })
+                    }
+                }
+            })
+        }
+
         
     }
 

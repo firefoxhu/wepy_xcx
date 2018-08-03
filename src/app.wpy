@@ -28,7 +28,9 @@ import { baseUrl } from '@/config'
 export default class extends wepy.app {
   config = {
     pages: [
-      'pages/user-center-circle',
+      'pages/index',
+      'pages/circle',
+      'pages/mchnt',
       'pages/user-center',
       'pages/user-center-mchnt-list',
       'pages/user-center-mchnt-list-info',
@@ -38,10 +40,7 @@ export default class extends wepy.app {
       'pages/user-center-mchnt-list-edit-servicecontent',
       'pages/user-center-mchnt-list-edit-shopdetail',
       'pages/user-center-mchnt-list-edit-phone', 
-      'pages/user-center-mchnt-list-edit-shopface',        
-      'pages/index',
-      'pages/circle',
-      'pages/mchnt',
+      'pages/user-center-mchnt-list-edit-shopface',
       'pages/mchnt-list',
       'pages/mchnt-entry',  
       'pages/mchnt-more',    
@@ -53,8 +52,8 @@ export default class extends wepy.app {
       'pages/post',
       'pages/index-article-detail',
       'pages/index-category',
-       'pages/user-center-message',
-
+      'pages/user-center-message',
+      'pages/user-center-circle',
       'pages/video' 
     ],
     window: {
@@ -70,12 +69,6 @@ export default class extends wepy.app {
       backgroundColor: '#2e9fff',
       borderStyle: '#2e9fff',
       list: [
-        {
-          pagePath: 'pages/user-center',
-          text: '个人中心',
-          iconPath: 'assets/images/user-a.png',
-          selectedIconPath: 'assets/images/user-u.png'
-        },
         {
           pagePath: 'pages/index',
           text: '资讯',
@@ -93,6 +86,12 @@ export default class extends wepy.app {
           text: '商家服务',
           iconPath: 'assets/images/icon_mchnt.png',
           selectedIconPath: 'assets/images/icon_mchnt_selected.png'
+        },
+         {
+          pagePath: 'pages/user-center',
+          text: '个人中心',
+          iconPath: 'assets/images/user-a.png',
+          selectedIconPath: 'assets/images/user-u.png'
         }
     ]
     }
