@@ -232,6 +232,10 @@ export default class UserCenter extends wepy.page {
   methods =  {
     mchntInfo(){
       //页面跳转
+      if(this.mchntSetting.show){
+        this.$navigate("./mchnt-entry")
+        return
+      }
       this.$navigate("./user-center-mchnt-list")
     },
     personalCircle(){

@@ -188,10 +188,10 @@
 <template>
   <view class="circle-container">
     <view class="notice">
-      <navigator open-type="navigate" url="/pages/post" hover-class="notice-hover">
+      <navigator open-type="navigate" url="/pages/circle" hover-class="notice-hover">
         <view class="content">
           <i class="iconfont icon-gonggaoxiaoxi-"></i>
-          信阳365服务 发布端的一些常见问题及咨询发发布端的一些常见问题及咨询发发布端的一些常见问题及咨询发发布端的一些常见问题及咨询发
+          您的发言如果违背社会道德，欺诈等会被系统删除。
         </view>
       </navigator>
     </view>
@@ -270,7 +270,8 @@
   export default class Circle extends wepy.page {
     config = {
       enablePullDownRefresh: true,
-      backgroundTextStyle: 'dark'
+      backgroundTextStyle: 'dark',
+      navigationBarTitleText: '信阳圈子'
     }
 
     data = {

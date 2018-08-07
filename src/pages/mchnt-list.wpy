@@ -221,6 +221,10 @@ import { baseUrl } from '@/config/index'
 
 export default class MchntList extends wepy.page {
 
+    config = {
+        navigationBarTitleText: '周边服务发现'
+    }
+
     data = {
         location:{
             latitude:0,
@@ -237,9 +241,8 @@ export default class MchntList extends wepy.page {
             duration: 500,
             data:{
                 list:[
-                    '好消息！信阳365服务正式营业进口量发大水',
-                    '商户免费入住，简单入住增加曝光率，给你补一定的额商户免费入住，简单入住增加曝光率，给你补一定的额',
-                    'http://luosen365.com/image/20180425/1524639781449.jpg'
+                    '信阳365服务，商户免费入驻。免费！！！',
+                    '入驻简单快捷，能够更大的曝光您的服务价值。'
                 ]
             }
         },

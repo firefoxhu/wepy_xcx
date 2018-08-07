@@ -329,16 +329,18 @@
             <view class="phone">
                 <input bindblur="tapBlurCheckPhone" bindinput="tapInputPhone" maxlength="11" placeholder="请输入您手机号码/(必填)" type="text"/>
             </view>
+            <!--
             <view @tap.stop="fetchCode" class="code">{{codeTimer.message}}</view>
+            -->
         </view>
-
+<!--
         <view class="cell-code">
             <view class="code">验证码</view>
             <view class="input">
-                <input bindblur="tapBlurCode" bindinput="tapInputCode" maxlength="6" placeholder="请输入手机短信收到的6位验证码" type="text"/>
+                <input bindblur="tapBlurCode" value="666666" bindinput="tapInputCode" maxlength="6" placeholder="请输入手机短信收到的6位验证码" type="text"/>
             </view>
         </view>
-
+-->
         <view class="cell-agreen">
             <checkbox-group bindchange="tapAgree">
                 <label>
@@ -361,6 +363,11 @@ import wepy from 'wepy'
 import req from '@/network'
 import { baseUrl } from '@/config/index'
 export default class MchntEntry extends wepy.page {
+
+
+    config = {
+        navigationBarTitleText: '商户免费入驻'
+    }
 
     data = {
 
@@ -485,18 +492,21 @@ export default class MchntEntry extends wepy.page {
                     return
                 }else{
                     //后台发送验证码
-                    req.get(baseUrl+"code/sms",{phone:phone}).then(res => {
+                    req.get(baseUrl+"sms/send",{phone:phone}).then(res => {
 
                         if(res.code === 0){
                             
                             wx.showModal({
-                                title: '短信验证码下发提示',
+                                title: '短信验证码下发提示[默认：666666]',
                                 content: res.message,
                                 showCancel: false,
                                 confirmText: '知道了'
                             })
                             
                             this.codeTimer.disabled = true
+
+                            this.smsCode = 666666
+                            this.$apply()
                         
 
                             let t = setInterval(() => {
@@ -782,7 +792,7 @@ export default class MchntEntry extends wepy.page {
                 })
                 return
             }
-
+/**
             let mobile = this.mchntForm.mchntPhone.length
             if(mobile === 0){
                 message = '手机号不能为空！'
@@ -816,7 +826,7 @@ export default class MchntEntry extends wepy.page {
                 })
                 return
             }
-
+ */
             if(this.chooseImage.length === 0){
                 wx.showModal({
                     title: '【门店照片】提示',

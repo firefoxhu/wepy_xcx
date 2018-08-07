@@ -270,7 +270,6 @@
                         暂无留言
                     </view>
                     <view class="panel-info3"  wx:if="{{currentIndex === '2'}}">暂无信息
-                        七牛云是国内领先的以视觉智能和数据智能为核心的企业级云计算服务商，同时也是国内最有特色的智能视频云服务商，累计为 70 多万家企业提供服务，覆盖了国内80%网民。围绕富媒体场景推出了对象存储、融合 CDN 加速、容器云、大数据平台、深度学习平台等产品、并提供一站式智能视频云解决方案。为各行业及应用提供可持续发展的智能视频云生态，帮助企业快速上云，创造更广阔的商业价值。
                     </view>
                 </scroll-view>
             </view>
@@ -315,6 +314,11 @@ import req from '@/network'
 import { baseUrl } from '@/config/index'
 
 export default class MchntDetail extends wepy.page {
+
+     config = {
+        navigationBarTitleText: '商户信息'
+    }
+
 
     data = {
         shopInfo: null,

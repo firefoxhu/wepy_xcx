@@ -59,12 +59,12 @@ export default class UserCenterMchntListEditType extends wepy.page {
 
     onLoad(params, data) {
         this.mchntInfo = data.preload.mchntInfo
-        req.get(baseUrl+"type/list",{
-            codes: this.mchntInfo.shopCategoryCode
+        req.get(baseUrl+"type/code",{
+            code: this.mchntInfo.shopCategoryCode
         }).then(res => {
             
             if(res.code === 0) {
-                let itemsTemp = res.data.map.HOME_REPAIR.map(res=>{
+                let itemsTemp = res.data.list.map(res=>{
                     return {
                         name: res.typeId,
                         value: res.name
