@@ -154,15 +154,9 @@
       </button>
 
       <view class="join-us">
-        我们还是一支年轻的团队，加入我们一起创造。
+        
       </view>
-
-      
-
-
-    </view>
-    
-    
+    </view>   
   </view>
 </template>
 

@@ -3,6 +3,7 @@
   .swiper-box{
     .swiper-image{
       width: 100%;
+      height: 100%;
     }
   }
   /**
@@ -282,9 +283,11 @@
     }
 
     onPullDownRefresh() {
-      setTimeout(() => {
-        wx.stopPullDownRefresh()
-      }, 1000);
+      wx.showNavigationBarLoading()
+      wx.showLoading({
+          title: '加载中',
+      })
+      this.initRecommend()
     }
 
     onReachBottom() {
@@ -307,12 +310,11 @@
     }
     
     onLoad() {
-      try {
-        var res = wx.getSystemInfoSync()
-      } catch (e) {
-        // Do something when catch error
-      }
 
+      wx.showNavigationBarLoading()
+      wx.showLoading({
+          title: '加载中',
+      })
       // init swiper
 
       // init sort
@@ -331,6 +333,9 @@
 
     initRecommend() {
       req.get(baseUrl2+'news/recommend',{page:0,size:this.recommendConfig.page.size}).then(res => {
+        wx.hideLoading()
+        wx.hideNavigationBarLoading()
+        wx.stopPullDownRefresh()
         if(res.code === 0) {
           // init
           this.recommendConfig.list = res.data.list
