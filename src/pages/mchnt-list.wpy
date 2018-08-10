@@ -178,7 +178,7 @@
         <view class="mchnt-new">
             <view class="title">最新入住</view>
             <scroll-view class="new-content"  scroll-x="true">
-                <view @tap.stop="selectItem" class="item" wx:for="{{newMchnt}}" wx:key="{{index}}">
+                <view class="item" wx:for="{{newMchnt}}" wx:key="{{index}}">
                     <view class="pic">
                         <image lazy-load="true" src="http://luosen365.com/image/20180425/1524639781449.jpg"/>
                     </view>
@@ -216,9 +216,7 @@
 
 <script>
 import wepy from 'wepy'
-import req from '@/network'
-import { baseUrl } from '@/config/index'
-
+import http from '@/utils/Http'
 export default class MchntList extends wepy.page {
 
     config = {
@@ -262,7 +260,7 @@ export default class MchntList extends wepy.page {
         }
     }
 
-    onLoad(params, data) {
+    async onLoad(params, data) {
         wx.showLoading({
             title: '加载中',
         })
@@ -283,7 +281,7 @@ export default class MchntList extends wepy.page {
                 this.query.params.typeId = data.preload.typeIdOrCagoryCode
             }
 
-            this.initShopByCategoryCode()
+            await this.initShopByCategoryCode()
         }
 
         wepy.getLocation({type: 'wgs84'}).then(res => {
@@ -296,14 +294,14 @@ export default class MchntList extends wepy.page {
 
     }
 
-    initShopByCategoryCode(){
+    async initShopByCategoryCode(){
 
         this.shopCategoryOrTypeConfig.page.index = 0
 
         this.query.params.page = 0 
         this.query.params.size = this.shopCategoryOrTypeConfig.page.size
       
-        req.get(baseUrl + this.query.url,this.query.params).then(res => {
+        await http.get(this.query.url,this.query.params).then(res => {
             wx.hideLoading()
              wx.hideNavigationBarLoading()
             if(res.code === 0){
@@ -323,13 +321,13 @@ export default class MchntList extends wepy.page {
 
     }
 
-    nextShopByCategoryCode(){
+    async nextShopByCategoryCode(){
         if(!this.shopCategoryOrTypeConfig.loading.hasMore){
             return
         }
 
         this.query.params.page = ++this.query.params.page
-        req.get(baseUrl + this.query.url,this.query.params).then(res => {
+        await http.get(this.query.url,this.query.params).then(res => {
             wx.hideLoading()
              wx.hideNavigationBarLoading()
             if(res.code === 0){
@@ -348,9 +346,9 @@ export default class MchntList extends wepy.page {
         })
     }
 
-    onReachBottom() {
+    async onReachBottom() {
       // more article
-      this.nextShopByCategoryCode()
+      await this.nextShopByCategoryCode()
     }
 
     methods =  {
@@ -366,9 +364,9 @@ export default class MchntList extends wepy.page {
                 phoneNumber: phone 
             })
         },
-        selectItem(pos){
+        async selectItem(pos){
             this.shopCategoryOrTypeConfig.list[pos].views = this.shopCategoryOrTypeConfig.list[pos].views + 1
-            req.post(baseUrl+'shopInfo/views?shopInfoId='+this.shopCategoryOrTypeConfig.list[pos].shopInfoId).then(res =>{})
+            await http.post('shopInfo/views?shopInfoId='+this.shopCategoryOrTypeConfig.list[pos].shopInfoId).then(res =>{})
 
 
             this.$preload("shopInfo",this.shopCategoryOrTypeConfig.list[pos])

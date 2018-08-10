@@ -31,9 +31,7 @@
 </template>
 
 <script>
-  import wepy from 'wepy'
-  import Toast from 'wepy-com-toast'
-  import req from '@/network'
+import wepy from 'wepy'
 
   export default class MchntEntrySuccess extends wepy.page {
 

@@ -185,11 +185,11 @@
 </template>
 
 <script>
-  import wepy from 'wepy'
-  import req from '@/network'
-  import { baseUrl2 } from '@/config/index'
-  var WxParse = require('../wxParse/wxParse.js');
-  export default class IndexArticleDetail extends wepy.page {
+import wepy from 'wepy'
+import Tips from '@/utils/Tips'
+import http from '@/utils/Http'
+var WxParse = require('../wxParse/wxParse.js');
+export default class IndexArticleDetail extends wepy.page {
     
     config = {
       navigationBarTitleText: '详情',
@@ -224,7 +224,7 @@
         inputValue(e){
             this.comment = e.detail.value
         },
-        comment(){
+        async comment(){
             if(this.comment.length < 3) {
                 wx.showToast({
                     title: this.comment.length === 0 ? '空空如也，写2个字吧！':'请输入合法得字符长度！',
@@ -239,7 +239,7 @@
             })
 
 
-            req.post(baseUrl2+"comment/article",{id:this.article.id,content:this.comment}).then(res => {
+            await http.post("proxy/comment/article",{id:this.article.id,content:this.comment}).then(res => {
                 wx.hideLoading()
 
                 if( res.code === 0){
@@ -275,12 +275,12 @@
         wxParseImgLoad(e){
             this.previewImage.push(e.target.dataset.src)
         },
-        fabulous(){
+        async fabulous(){
             if(!this.fabulous) {
                 this.article.fabulous =Number(this.article.fabulous) + 1
 
                 // rquest fabulous +1
-                req.get(baseUrl2+"news/fabulous",{id:this.article.id}).then(res => {
+                await req.get("proxy/news/fabulous",{id:this.article.id}).then(res => {
                     if( res.code === 0){
                         wx.setStorage({
                             key: "F"+this.article.id,
@@ -296,12 +296,12 @@
 
     }
 
-    onLoad(params, data) {
+    async onLoad(params, data) {
 
         // 如果从分享进入则调
         if(data.preload === undefined) {
             this.goIndex = true
-            req.get(baseUrl2+'news/detail',{id:params.id}).then(res =>{
+           await req.get('proxy/news/detail',{id:params.id}).then(res =>{
                 this.initData(res.data)
             })
             return
@@ -348,8 +348,8 @@
 
     }
 
-    initComment() {
-        req.get(baseUrl2+'comment/list',{page:0,size:this.commentList.page.size,id:this.article.id}).then(res => {
+    async initComment() {
+        await http.get('proxy/comment/list',{page:0,size:this.commentList.page.size,id:this.article.id}).then(res => {
             if(res.code === 0) {
                 // init
                 this.commentList.list = res.data.list
@@ -360,11 +360,11 @@
         })
     }
 
-    nextComment() {
+    async nextComment() {
       if(!this.commentList.loading.hasMore){
         return
       }
-      req.get(baseUrl2+'comment/list',{page:++this.commentList.page.index,size:this.commentList.page.size,id:this.article.id}).then(res => {
+      await http.get('proxy/comment/list',{page:++this.commentList.page.index,size:this.commentList.page.size,id:this.article.id}).then(res => {
         if(res.code === 0) {
           // append
           this.commentList.list = this.commentList.list.concat(res.data.list)

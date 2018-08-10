@@ -1,6 +1,9 @@
-export const baseUrl = 'http://192.168.3.12:8080/'
+//export const baseUrl = 'https://www.luosen365.com/'
 
-export const baseUrl2 = 'http://39.107.228.75:9001/'
+//export const baseUrl2 = 'https://www.luosen365.com/proxy/'
+
+export const baseUrl = 'http://192.168.3.12:8080/'
+export const baseUrl2 ='http://192.168.3.12:8080/proxy/'
 
 // 热点文章
 export const ARTICLE_HOT_URI = 'news/recommend'

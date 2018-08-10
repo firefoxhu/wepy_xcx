@@ -110,10 +110,7 @@
             <i class="iconfont icon-dizhi"/>{{location}}
           </view>
           <view class="submit">
-            <button wx:if="{{ anonymous === '0'}}" size="mini"  open-type="getUserInfo" bindgetuserinfo="postArticle">提交<i class="iconfont icon-anquanfabu"/></button>
-
-            <button wx:if="{{ anonymous === '1'}}" size="mini" @tap.stop="postAnonymousArticle">提交<i class="iconfont icon-anquanfabu"/></button>
-
+            <button size="mini"  open-type="getUserInfo" bindgetuserinfo="postArticle">提交<i class="iconfont icon-anquanfabu"/></button>
           </view>
         </view>
     </view>
@@ -130,11 +127,11 @@
 </template>
 
 <script>
-  import wepy from 'wepy'
-
-  import req from '@/network'
-  import { baseUrl } from '@/config/index'
-  export default class Post extends wepy.page {
+import wepy from 'wepy'
+import auth from '@/api/auth'
+import http from '@/utils/Http'
+import Tips from '@/utils/Tips'
+export default class Post extends wepy.page {
 
     config = {
       navigationBarTitleText: '发表信息',
@@ -145,11 +142,12 @@
       picture:[],
       location: "信阳市（默认）",
       anonymous: '0',
-      content: ""
+      content: "",
+      userInfo: null
       
     }
 
-    writeArticle(){
+   async writeArticle(){
 
       if(this.content.length <= 6) {
         wx.showToast({
@@ -167,8 +165,8 @@
       }
 
       if(this.anonymous === '0') {
-        params.nickname = this.$parent.globalData.userInfo.nickName
-        params.avatar = this.$parent.globalData.userInfo.avatarUrl
+        params.nickname = wepy.$instance.globalData.userInfo.nickName
+        params.avatar = wepy.$instance.globalData.userInfo.avatarUrl
       }
       wx.showLoading({
         title: '正在发布中...',
@@ -178,11 +176,12 @@
         let uploadImage = []
         for(let i=0;i<this.picture.length;i++){
           wx.uploadFile({
-            url: baseUrl+'xy/upload',
+            url: wepy.$instance.globalData.baseUrl + 'xy/upload',
             filePath: this.picture[i],
             name: 'file',
             header: {
-              'content-type':'multipart/form-data'
+              'content-type':'multipart/form-data',
+              'xy365_3rd_session': wepy.$instance.globalData.auth.third_session
             }, // 设置请求的 header
             success(res){
               uploadImage.push(res.data)
@@ -191,7 +190,7 @@
               this.$apply()
               if(uploadImage.length === this.picture.length) { // 上传完毕
                 params.images  = uploadImage.join(',')
-                req.post(baseUrl+"article/write",params).then(res => {
+                http.post("article/write",params).then(res => {
                   wx.hideLoading()
                   if(res.code === 0){
                     // 返回刷新的标志
@@ -212,7 +211,7 @@
           })
         }
       }else{
-        req.post(baseUrl+"article/write",params).then(res => {
+        await http.post("article/write",params).then(res => {
           wx.hideLoading()
           if(res.code === 0){
             // 返回刷新的标志
@@ -251,14 +250,16 @@
       bindTextAreaBlur(e){
         this.content = e.detail.value
       },
-      postArticle(e){
-        if(e.detail.userInfo) {
-          this.$parent.globalData.userInfo = e.detail.userInfo
+      async postArticle({ detail }){
+        if (detail.rawData) {
+          const result = await auth.user({block: true, redirect: true}, detail)
+          if (!result) return
+          Tips.success('授权成功')
           this.writeArticle()
+        }else{
+          Tips.error('授权失败')
         }
-      },
-      postAnonymousArticle(){
-        this.writeArticle()
+        
       },
       selectPictrue(){
         wx.chooseImage({
@@ -275,6 +276,5 @@
       }
     }
 
-
-  }
+}
 </script>

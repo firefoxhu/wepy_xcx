@@ -25,7 +25,9 @@
       <view class="link-info">
         <navigator url="/pages/circle" open-type="switchTab">圈子</navigator>
       </view>
-      <view class="link-info">个人中心</view>
+      <view class="link-info">
+        <navigator url="/pages/user-center" open-type="switchTab">个人中心</navigator>
+      </view>
       
     </view>
   </view>

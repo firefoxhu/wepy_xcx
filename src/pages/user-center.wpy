@@ -162,8 +162,9 @@
 
 <script>
 import wepy from 'wepy'
-import req from '@/network'
-import { baseUrl } from '@/config/index'
+import auth from '@/api/auth'
+import http from '@/utils/Http'
+import Tips from '@/utils/Tips'
 export default class UserCenter extends wepy.page {
 
   config = {
@@ -182,9 +183,13 @@ export default class UserCenter extends wepy.page {
     countArticle: 0
   }
 
-  onLoad() {
+  async onLoad() {
+
+    // 登录检查
+    await auth.login()
+
     //  统计当前登录用户发表说说数据
-    req.get(baseUrl+"article/countArticle").then(res => {
+    await http.get("article/countArticle").then(res => {
       if(res.code === 0){
         this.countArticle = res.data.countArticle
       }
@@ -192,7 +197,7 @@ export default class UserCenter extends wepy.page {
     })
 
     // 统计消息中心未阅读的数据
-    req.get(baseUrl+"message/unReaderCount").then(res => {
+    await http.get("message/unReaderCount").then(res => {
       if(res.code === 0){
         this.messageUnRead = res.data.unReadCount
       }
@@ -200,7 +205,7 @@ export default class UserCenter extends wepy.page {
     })
 
     // 判断当前的微信是否绑定商户
-    req.get(baseUrl+"mchnt/binding").then(res => {
+    await http.get("mchnt/binding").then(res => {
       if(res.code === 0){
         this.mchntSetting.text = ''
       }else{

@@ -244,10 +244,10 @@
 </template>
 
 <script>
-  import wepy from 'wepy'
-  import req from '@/network'
-  import { baseUrl } from '@/config/index'
-  export default class CircleDetail extends wepy.page {
+import wepy from 'wepy'
+import Tips from '@/utils/Tips'
+import http from '@/utils/Http'
+export default class CircleDetail extends wepy.page {
 
     config = {
       navigationBarTitleText: '详情查看'
@@ -298,20 +298,20 @@
     }
 
     methods = {
-      fabulousComment(item,index){
+      async fabulousComment(item,index){
         let isFabulous = wx.getStorageSync("C_"+item.commentId)
         if(!isFabulous){
           // 事实处理浏览次数
           this.commentConfig.list[index].fabulous += 1
           wx.setStorageSync("C_"+item.commentId,item.fabulous + 1)
-          req.post(baseUrl+"comment/fabulous?commentId="+item.commentId).then(res => {
+          await http.post("comment/fabulous?commentId="+item.commentId).then(res => {
           })
         }else{
           // 事实处理浏览次数
           this.commentConfig.list[index].fabulous -= 1
           this.commentConfig.list[index].isFabulous = false
           wx.removeStorageSync("C_"+item.commentId)
-          req.post(baseUrl+"comment/unfabulous?commentId="+item.commentId).then(res => {
+          await http.post("comment/unfabulous?commentId="+item.commentId).then(res => {
           })
         }
       },
@@ -331,14 +331,12 @@
       // fetch cache data 
       this.article = data.preload.article
 
-      console.log(this.article)
-
       // fetch comment data
       this.initComment()
     }
 
-    initComment(){
-      req.get(baseUrl+'comment/list',{page: 0,size: this.commentConfig.page.size,articleId: this.article.articleId}).then(res => {
+    async initComment(){
+      await http.get('comment/list',{page: 0,size: this.commentConfig.page.size,articleId: this.article.articleId}).then(res => {
         if(res.code === 0){
           this.commentConfig.commentsNumber = res.data.commentsNumber
           this.commentConfig.list = res.data.list
@@ -349,18 +347,18 @@
       })
     }
 
-    onReachBottom() {
+    async onReachBottom() {
       // more comment
-      this.nextComment()
+      await this.nextComment()
     }
 
 
-    nextComment(){
+    async nextComment(){
       if( !this.commentConfig.loading.hasMore){
         return
       }
       wx.showNavigationBarLoading()
-      req.get(baseUrl+'comment/list',{
+      await http.get('comment/list',{
         page: ++ this.commentConfig.page.index,
         size: this.commentConfig.page.size
       }).then(res => {

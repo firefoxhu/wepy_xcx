@@ -47,8 +47,7 @@
 
 <script>
 import wepy from 'wepy'
-import req from '@/network'
-import { baseUrl } from '@/config/index'
+import http from '@/utils/Http'
 export default class UserCenterMchntListEditType extends wepy.page {
 
     data = {
@@ -57,9 +56,9 @@ export default class UserCenterMchntListEditType extends wepy.page {
         items: []
     }
 
-    onLoad(params, data) {
+    async onLoad(params, data) {
         this.mchntInfo = data.preload.mchntInfo
-        req.get(baseUrl+"type/code",{
+        await http.get("type/code",{
             code: this.mchntInfo.shopCategoryCode
         }).then(res => {
             
@@ -91,13 +90,13 @@ export default class UserCenterMchntListEditType extends wepy.page {
  
 
     methods =  {
-        eidtType(){
+        async eidtType(){
 
             wx.showLoading({
                 title: '请求中...',
             })
             wx.showNavigationBarLoading()
-            req.post(baseUrl+"shopInfoType/binding",{
+            await http.post("shopInfoType/binding",{
                 typeIds: this.typeIds.join(",")
             }).then(res => {
                 wx.hideLoading()

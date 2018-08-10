@@ -191,11 +191,11 @@
 </template>
 
 <script>
-  import wepy from 'wepy'
-  import req from '@/network'
-  import { baseUrl2 } from '@/config/index'
-  const threshold = 600
-  export default class Index extends wepy.page {
+import wepy from 'wepy'
+import Tips from '@/utils/Tips'
+import http from '@/utils/Http'
+const threshold = 600
+export default class Index extends wepy.page {
     config = {
       enablePullDownRefresh: true,
       backgroundTextStyle: 'dark'
@@ -251,7 +251,7 @@
               item.views =  Number(item.views) + 1
 
               // 异步请求 浏览+1
-              req.get(baseUrl2+"news/views",{id:item.id}).then(res => {
+              http.get("proxy/news/views",{id:item.id}).then(res => {
                 if( res.code === 0)
                   wx.setStorage({
                     key:"V"+item.id,
@@ -309,19 +309,16 @@
       }
     }
     
-    onLoad() {
+    async onLoad() {
 
-      wx.showNavigationBarLoading()
-      wx.showLoading({
-          title: '加载中',
-      })
+      Tips.loading()
       // init swiper
 
       // init sort
-      this.initSort()
+      await this.initSort()
 
       // init recommend
-      this.initRecommend()  
+      await this.initRecommend()  
     }
 
     onShareAppMessage(options) {
@@ -331,28 +328,27 @@
         }
     }
 
-    initRecommend() {
-      req.get(baseUrl2+'news/recommend',{page:0,size:this.recommendConfig.page.size}).then(res => {
-        wx.hideLoading()
-        wx.hideNavigationBarLoading()
-        wx.stopPullDownRefresh()
+    async initRecommend() {
+      await http.get('proxy/news/recommend',{page:0,size:this.recommendConfig.page.size}).then(res => {
+        Tips.loaded()
         if(res.code === 0) {
           // init
           this.recommendConfig.list = res.data.list
           this.recommendConfig.loading.hasMore = res.data.hasNext
           this.recommendConfig.loading.tip = res.data.list.length === 0 ? '暂无数据~' : (res.data.hasNext ? '数据加载中...' : '没有更多数据了~')
           this.$apply()
-        }
+        }else{
+          Tips.error(res.msg)
+        }  
       })
     }
 
-    nextRecommend() {
+    async nextRecommend() {
       if(!this.recommendConfig.loading.hasMore){
         return
       }
-      req.get(baseUrl2+'news/recommend',{page:++this.recommendConfig.page.index,size:this.recommendConfig.page.size}).then(res => {
+      await http.get('proxy/news/recommend',{page:++this.recommendConfig.page.index,size:this.recommendConfig.page.size}).then(res => {
         if(res.code === 0) {
-          // append
           this.recommendConfig.list = this.recommendConfig.list.concat(res.data.list)
           this.recommendConfig.loading.hasMore = res.data.hasNext
           this.recommendConfig.loading.tip = res.data.list.length === 0 ? '暂无数据~' : (res.data.hasNext ? '数据加载中...' : '没有更多数据了~')
@@ -361,11 +357,13 @@
       })
     }
     
-    initSort() {
-      req.get(baseUrl2+'category',{page:0,size:8,classId: '2904e1433c9541939e36f8b45e1abbdc'}).then(res => {
+    async initSort() {
+      await http.get('proxy/category',{page:0,size:8,classId: '2904e1433c9541939e36f8b45e1abbdc'}).then(res => {
         if(res.code === 0) {
-        this.sortConfig.list = res.data.list
-        this.$apply()
+          this.sortConfig.list = res.data.list
+          this.$apply()
+        }else{
+          Tips.error(res.msg)
         }
       })
     }

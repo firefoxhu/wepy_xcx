@@ -216,9 +216,8 @@
 
 <script>
 import wepy from 'wepy'
-import req from '@/network'
-import { baseUrl } from '@/config/index'
-
+import Tips from '@/utils/Tips'
+import http from '@/utils/Http'
 export default class Mchnt extends wepy.page {
 
     config = {
@@ -271,12 +270,11 @@ export default class Mchnt extends wepy.page {
         this.initRecommendShop()
     }
 
-    onLoad() {
+    async onLoad() {
         wx.showLoading({
             title: '加载中',
         })
-        wepy.getLocation({type: 'wgs84'})
-        .then(res => {
+        wepy.getLocation({type: 'wgs84'}).then(res => {
             this.location.latitude = res.latitude
             this.location.longitude = res.longitude
             this.$apply()
@@ -284,17 +282,17 @@ export default class Mchnt extends wepy.page {
             console.log("位置未授权")
         })
         
-        this.initCategory()
+        await this.initCategory()
 
         // 初始化数据
-        this.initRecommendShop()
+        await this.initRecommendShop()
     }
 
     // 初始化类别
-    initCategory(){
+    async initCategory(){
         let codes = ['HOME_REPAIR','HOUSEKEEP_SERVIC','DOOR_INSTALL','HOUSE_REPAIR','SECOND_MARKET','FREIGHT_MOVING','PART_TIME_JOB']
 
-        req.get(baseUrl+'category/code',{codes:codes.join(',')}).then(res => {
+        await http.get('category/code',{codes:codes.join(',')}).then(res => {
             if(res.code === 0){
                 res.data.list.push({
                     name: '其它',
@@ -316,11 +314,11 @@ export default class Mchnt extends wepy.page {
     }
 
     //初始化推荐门店 每个行业选出优秀门店做此展示
-    initRecommendShop(){
+    async initRecommendShop(){
 
         this.recommendConfig.page.index = 0
 
-        req.get(baseUrl+'shop/list',{
+        await http.get('shop/list',{
             page: 0,
             size: this.recommendConfig.page.size,
             model: 'DEFAULT'
@@ -345,12 +343,12 @@ export default class Mchnt extends wepy.page {
 
     }
 
-    nextRecommendShop(){
+    async nextRecommendShop(){
         if(!this.recommendConfig.loading.hasMore){
             return
         }
         wx.showNavigationBarLoading()
-        req.get(baseUrl+'shop/list',{
+        await http.get('shop/list',{
             page: ++this.recommendConfig.page.index,
             size: this.recommendConfig.page.size,
             model: 'DEFAULT'
@@ -402,9 +400,9 @@ export default class Mchnt extends wepy.page {
         mchntEntry(){
             this.$navigate("./mchnt-entry")
         },
-        selectMchnt(item,pos) {
+       async selectMchnt(item,pos) {
             this.recommendConfig.list[pos].views = this.recommendConfig.list[pos].views + 1
-            req.post(baseUrl+'shopInfo/views?shopInfoId='+item.shopInfoId).then(res =>{})
+           await http.post('shopInfo/views?shopInfoId='+item.shopInfoId).then(res =>{})
 
 
             this.$preload("shopInfo",this.recommendConfig.list[pos])

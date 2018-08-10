@@ -55,8 +55,7 @@
 
 <script>
 import wepy from 'wepy'
-import req from '@/network'
-import { baseUrl } from '@/config/index'
+import http from '@/utils/Http'
 export default class UserCenterMessage extends wepy.page {
 
     config = {
@@ -82,11 +81,11 @@ export default class UserCenterMessage extends wepy.page {
     }
 
 
-    initMesssage(){
+    async initMesssage(){
 
         this.messageConfig.page.index = 0
 
-        req.get(baseUrl+"message/list",{
+        await http.get("message/list",{
             page: this.messageConfig.page.index,
             size: this.messageConfig.page.size
         }).then(res => {
@@ -100,8 +99,8 @@ export default class UserCenterMessage extends wepy.page {
         })
     }
 
-    onLoad() {
-        this.initMesssage()
+    async onLoad() {
+       await this.initMesssage()
     }
 
     onPullDownRefresh() {
@@ -127,7 +126,7 @@ export default class UserCenterMessage extends wepy.page {
                     if (res.confirm) {
                         if(this.messageConfig.list[pos].isRead === '1'){
                             
-                            req.post(baseUrl+"message/readed",{
+                            http.post("message/readed",{
                                 messageId: this.messageConfig.list[pos].id
                             }).then(res => {
                                 if(res.code === 0){
@@ -139,7 +138,7 @@ export default class UserCenterMessage extends wepy.page {
                         }
                     } else if (res.cancel) {
                         wx.showNavigationBarLoading()
-                        req.post(baseUrl+"message/remove",{
+                        http.post("message/remove",{
                             messageId: this.messageConfig.list[pos].id
                         }).then(res => {
                             this.onPullDownRefresh()

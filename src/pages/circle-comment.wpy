@@ -71,8 +71,7 @@
             <i class="iconfont icon-dizhi"/>{{location}}
           </view>
           <view class="submit">
-            <button wx:if="{{ anonymous === '0'}}" size="mini"  form-type="submit" open-type="getUserInfo" bindgetuserinfo="commentArticle">评论<i class="iconfont icon-anquanfabu"/></button>
-            <button wx:if="{{ anonymous === '1'}}" size="mini" @tap.stop="commentAnonymousArticle">匿名评论<i class="iconfont icon-anquanfabu"/></button>
+            <button size="mini"  form-type="submit" open-type="getUserInfo" bindgetuserinfo="commentArticle">评论<i class="iconfont icon-anquanfabu"/></button>
           </view>
         </view>
     </view>
@@ -80,10 +79,11 @@
 </template>
 
 <script>
-  import wepy from 'wepy'
-  import req from '@/network'
-  import { baseUrl } from '@/config/index'
-  export default class CircleComment extends wepy.page {
+import wepy from 'wepy'
+import Tips from '@/utils/Tips'
+import auth from '@/api/auth'
+import http from '@/utils/Http'
+export default class CircleComment extends wepy.page {
 
     config = {
       navigationBarTitleText: '消息评论',
@@ -102,7 +102,7 @@
       this.articleId = data.preload.article.articleId
     }
 
-    commentArticle(){
+    async commentArticle(){
       if(this.content.length <= 3) {
         wx.showToast({
           title: '请写一句话吧（3个字以上）...',
@@ -135,7 +135,7 @@
         mask:true,
       })
 
-      req.post(baseUrl+"comment/write",params).then(res => {
+      await http.post("comment/write",params).then(res => {
         wx.hideLoading()
         if(res.code === 0) {
           // 返回刷新的标志
@@ -154,13 +154,15 @@
 
 
     methods = {
-      commentAnonymousArticle(){
-        this.commentArticle()
-      },
-      commentArticle(e){
-        if(e.detail.userInfo) {
-          this.$parent.globalData.userInfo = e.detail.userInfo
-          this.commentArticle()
+      async commentArticle({ detail }){
+
+        if (detail.rawData) {
+          const result = await auth.user({block: true, redirect: true}, detail)
+          if (!result) return
+          Tips.success('授权成功')
+          await this.commentArticle()
+        }else{
+          Tips.error('授权失败')
         }
       },
       anonymousChange(e){

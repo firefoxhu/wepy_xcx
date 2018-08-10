@@ -262,31 +262,31 @@
 </template>
 
 <script>
-  import wepy from 'wepy'
-  import req from '@/network'
-  import PostLink from '@/components/postLink'
-  import { baseUrl } from '@/config/index'
+import wepy from 'wepy'
+import PostLink from '@/components/postLink'
+import Tips from '@/utils/Tips'
+import http from '@/utils/Http'
 
-  export default class Circle extends wepy.page {
-    config = {
-      enablePullDownRefresh: true,
-      backgroundTextStyle: 'dark',
-      navigationBarTitleText: '信阳圈子'
-    }
+export default class Circle extends wepy.page {
+  config = {
+    enablePullDownRefresh: true,
+    backgroundTextStyle: 'dark',
+    navigationBarTitleText: '信阳圈子'
+  }
 
-    data = {
-      articleConfig:{
-        loading:{
-          hasMore: true,
-          tip: '疾跑加载中...'
-        },
-        page:{
-          index: 0,
-          size: 6
-        },
-        list:[]
-      }
+  data = {
+    articleConfig:{
+      loading:{
+        hasMore: true,
+        tip: '疾跑加载中...'
+      },
+      page:{
+        index: 0,
+        size: 6
+      },
+      list:[]
     }
+  }
 
     onShow () {
       
@@ -310,9 +310,9 @@
 
     }
 
-    onLoad() {
+    async onLoad() {
       // 初始化数据
-      this.initArticle()
+      await this.initArticle()
     }
 
     methods = {
@@ -324,12 +324,12 @@
         })
 
       },
-      selectTA(item,index) {
+      async selectTA(item,index) {
 
         // 事实处理浏览次数
         this.articleConfig.list[index].views += 1
 
-        req.post(baseUrl+"article/views?articleId="+item.articleId).then(res => {
+        await http.post("article/views?articleId="+item.articleId).then(res => {
         })
 
         //页面跳转
@@ -337,21 +337,21 @@
         this.$navigate("./circle-detail")
 
       },
-      fabulous(item,index) {
+      async fabulous(item,index) {
 
         let isFabulous = wx.getStorageSync("F_"+item.articleId)
         if(!isFabulous){
           // 事实处理浏览次数
           this.articleConfig.list[index].fabulous += 1
           wx.setStorageSync("F_"+item.articleId,item.fabulous + 1)
-          req.post(baseUrl+"article/fabulous?articleId="+item.articleId).then(res => {
+          await http.post("article/fabulous?articleId="+item.articleId).then(res => {
           })
         }else{
           // 事实处理浏览次数
           this.articleConfig.list[index].fabulous -= 1
           this.articleConfig.list[index].isFabulous = false
           wx.removeStorageSync("F_"+item.articleId)
-          req.post(baseUrl+"article/unfabulous?articleId="+item.articleId).then(res => {
+          await http.post("article/unfabulous?articleId="+item.articleId).then(res => {
           })
 
         }
@@ -359,11 +359,11 @@
       }
     }
 
-    initArticle(){
+    async initArticle(){
 
       this.articleConfig.page.index = 0
 
-      req.get(baseUrl+'article/list',{
+      await http.get('article/list',{
         page: 0,
         size: this.articleConfig.page.size
       }).then(res => {
@@ -380,12 +380,12 @@
       })
     }
 
-    nextArticle(){
+    async nextArticle(){
       if( !this.articleConfig.loading.hasMore){
         return
       }
       wx.showNavigationBarLoading()
-      req.get(baseUrl+'article/list',{
+      await http.get('article/list',{
         page: ++ this.articleConfig.page.index,
         size: this.articleConfig.page.size
       }).then(res => {
@@ -422,9 +422,9 @@
       }
     }
 
-    onReachBottom() {
+    async onReachBottom() {
       // more article
-      this.nextArticle()
+      await this.nextArticle()
     }
 
     components = {

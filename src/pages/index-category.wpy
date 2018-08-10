@@ -78,11 +78,11 @@
 </template>
 
 <script>
-  import wepy from 'wepy'
-  import req from '@/network'
-  import { baseUrl2 } from '@/config/index'
+import wepy from 'wepy'
+import Tips from '@/utils/Tips'
+import http from '@/utils/Http'
 
-  export default class Category extends wepy.page {
+export default class Category extends wepy.page {
 
     
     config = {
@@ -105,12 +105,12 @@
     }
 
     methods = {
-      selectArticle(item) {
+      async selectArticle(item) {
         this.$preload("article",item)
         this.$navigate("./index-article-detail")
 
         // 异步请求 浏览+1
-        req.get(baseUrl2+"news/views",{id:item.id}).then(res => {
+       await http.get("proxy/news/views",{id:item.id}).then(res => {
           if( res.code === 0)
             wx.setStorage({
               key:"V"+item.id,
@@ -126,8 +126,8 @@
       }
     }
 
-    onPullDownRefresh() {
-      req.get(baseUrl2+'news/category',{page:0,size:this.categoryConfig.page.size,typeId:this.category.id}).then(res => {
+    async onPullDownRefresh() {
+      await http.get('proxy/news/category',{page:0,size:this.categoryConfig.page.size,typeId:this.category.id}).then(res => {
         if(res.code === 0) {
           // init
           this.categoryConfig.list = res.data.list
@@ -146,7 +146,7 @@
       this.articleNext()
     }
 
-    onLoad (params, data) {
+    async onLoad (params, data) {
       // 分享入口 
       if(data.from === undefined) {
         // 通过分享进入 加载数据
@@ -161,7 +161,7 @@
       })
 
       // init category article  data 
-      this.initArticle()
+      await this.initArticle()
     }
 
     onShareAppMessage(options) {
@@ -171,8 +171,8 @@
       }
     }
 
-    initArticle() {
-      req.get(baseUrl2+'news/category',{page:0,size:this.categoryConfig.page.size,typeId:this.category.id}).then(res => {
+    async initArticle() {
+      await http.get('proxy/news/category',{page:0,size:this.categoryConfig.page.size,typeId:this.category.id}).then(res => {
         if(res.code === 0) {
           // init
           this.categoryConfig.list = res.data.list
@@ -183,11 +183,11 @@
       })
     }
 
-    articleNext() {
+    async articleNext() {
       if(!this.categoryConfig.loading.hasMore){
         return
       }
-      req.get(baseUrl2+'news/category',{page:++this.categoryConfig.page.index,size:this.categoryConfig.page.size,typeId:this.category.id}).then(res => {
+      await http.get('proxy/news/category',{page:++this.categoryConfig.page.index,size:this.categoryConfig.page.size,typeId:this.category.id}).then(res => {
         if(res.code === 0) {
           // init
           this.categoryConfig.list = this.categoryConfig.list.concat(res.data.list)

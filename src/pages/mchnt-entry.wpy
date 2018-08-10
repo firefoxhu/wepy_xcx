@@ -350,7 +350,7 @@
             </checkbox-group>
         </view>
 
-        <view class="weui-btn-area">
+        <view style="margin:40rpx;">
             <button class="weui-btn" type="primary" open-type="getUserInfo" bindgetuserinfo="mchntEntry">确定</button>
         </view>
 
@@ -360,8 +360,9 @@
 
 <script>
 import wepy from 'wepy'
-import req from '@/network'
-import { baseUrl } from '@/config/index'
+import auth from '@/api/auth'
+import http from '@/utils/Http'
+import Tips from '@/utils/Tips'
 export default class MchntEntry extends wepy.page {
 
 
@@ -413,12 +414,12 @@ export default class MchntEntry extends wepy.page {
         }
     }
 
-    onLoad() {
-        this.initCategory()
+    async onLoad() {
+        await this.initCategory()
     }
 
-    initCategory(){
-        req.get(baseUrl+'category/list').then(res => {
+    async initCategory(){
+        await http.get('category/list').then(res => {
             if(res.code === 0){
                 this.categoryCodes.list = res.data.list
                 this.categoryCodes.list.unshift({
@@ -475,7 +476,7 @@ export default class MchntEntry extends wepy.page {
                 this.shopForm.addressDescription = e.detail.value
             }
         },
-        fetchCode(){
+        async fetchCode(){
             
             if(this.codeTimer.disabled){
                 return
@@ -492,7 +493,7 @@ export default class MchntEntry extends wepy.page {
                     return
                 }else{
                     //后台发送验证码
-                    req.get(baseUrl+"sms/send",{phone:phone}).then(res => {
+                    await http.get("sms/send",{phone:phone}).then(res => {
 
                         if(res.code === 0){
                             
@@ -559,7 +560,7 @@ export default class MchntEntry extends wepy.page {
         tapInputCode(e){
             this.smsCode = e.detail.value
         },
-        tapBlurCheckPhone(e){
+        async tapBlurCheckPhone(e){
             let value = e.detail.value
             if(value.length === 0){
                 wx.showToast({
@@ -581,7 +582,7 @@ export default class MchntEntry extends wepy.page {
             wx.showLoading({
                 title: '验证名称手机号是否已被占用！',
             })
-            req.get(baseUrl+"mchnt/checkPhone",{phone:this.mchntForm.mchntPhone}).then(res => {
+            await http.get("mchnt/checkPhone",{phone:this.mchntForm.mchntPhone}).then(res => {
                 wx.hideLoading()
                 if(res.code !== 0){
                     wx.showModal({
@@ -670,7 +671,7 @@ export default class MchntEntry extends wepy.page {
         tapInputShopName(e){
             this.shopForm.shopName = e.detail.value
         },
-        tapBlurCheckShopName(e) {
+        async tapBlurCheckShopName(e) {
             let value = e.detail.value
             if(value.length === 0) {
                 wx.showToast({
@@ -692,7 +693,7 @@ export default class MchntEntry extends wepy.page {
             wx.showLoading({
                 title: '验证名称是否被占用',
             })
-            req.get(baseUrl+"shop/checkName",{shopName: this.shopForm.shopName}).then(res => {
+            await http.get("shop/checkName",{shopName: this.shopForm.shopName}).then(res => {
                 wx.hideLoading()
                 if(res.code !== 0){
                     wx.showModal({
@@ -705,7 +706,7 @@ export default class MchntEntry extends wepy.page {
             })
 
         },
-        mchntEntry(e) {
+        async mchntEntry({ detail }) {
 
             if(!this.agreeTreaty){
                 wx.showModal({
@@ -837,19 +838,29 @@ export default class MchntEntry extends wepy.page {
                 return
             }
 
+            if (detail.rawData) {
+                const result = await auth.user({block: true, redirect: true}, detail)
+                if (!result) return
+            }else{
+                return
+            }
+
+
+
             // 上传图片
             wx.showLoading({
-                title: '正在发布中...',
+                title: '正在发入住中...',
                 mask:true,
             })
             let uploadImage = []
             for(let i=0;i<this.chooseImage.length;i++){
                 wx.uploadFile({
-                    url: baseUrl+'xy/upload',
+                    url: wepy.$instance.globalData.baseUrl + 'xy/upload',
                     filePath: this.chooseImage[i],
                     name: 'file',
                     header: {
-                    'content-type':'multipart/form-data'
+                    'content-type':'multipart/form-data',
+                    'xy365_3rd_session': wepy.$instance.globalData.auth.third_session
                     }, // 设置请求的 header
                     success(res){
                         uploadImage.push(res.data)
@@ -858,7 +869,7 @@ export default class MchntEntry extends wepy.page {
                         this.$apply()
                         if(uploadImage.length === this.chooseImage.length) { // 上传完毕
                             this.shopInfoForm.bannerPicture  = uploadImage.join(',')
-                            req.post(baseUrl+"mchnt/comeIn",{
+                            http.post("mchnt/comeIn",{
                                 mchntPhone: this.mchntForm.mchntPhone,
                                 mchntName: this.mchntForm.mchntName,
                                 smsCode: this.smsCode,

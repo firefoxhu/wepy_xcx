@@ -57,8 +57,7 @@
 
 <script>
 import wepy from 'wepy'
-import req from '@/network'
-import { baseUrl } from '@/config/index'
+import http from '@/utils/Http'
 
 export default class UserCenterMchntListEditShopface extends wepy.page {
 
@@ -95,11 +94,12 @@ export default class UserCenterMchntListEditShopface extends wepy.page {
             this.pictures.map(img=>{
 
                 wx.uploadFile({
-                    url: baseUrl+'xy/upload',
+                    url: wepy.$instance.globalData.baseUrl + 'xy/upload',
                     filePath: img,
                     name: 'file',
                     header: {
-                    'content-type':'multipart/form-data'
+                    'content-type':'multipart/form-data',
+                    'xy365_3rd_session': wepy.$instance.globalData.auth.third_session
                     }, // 设置请求的 header
                     success(res){
                         uploadImage.push(res.data)
@@ -110,7 +110,7 @@ export default class UserCenterMchntListEditShopface extends wepy.page {
                             mask:true
                         })
                         if(uploadImage.length === this.pictures.length) {
-                            req.post(baseUrl+"shopInfo/updateShopInfo",{
+                            http.post("shopInfo/updateShopInfo",{
                                 galleryPicture:uploadImage.join(',')
                             }).then(res=>{
                                 wx.hideLoading()

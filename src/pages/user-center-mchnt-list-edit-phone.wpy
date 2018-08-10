@@ -51,8 +51,7 @@
 
 <script>
 import wepy from 'wepy'
-import req from '@/network'
-import { baseUrl } from '@/config/index'
+import http from '@/utils/Http'
 export default class UserCenterMchntListEditPhone extends wepy.page {
 
     data = {
@@ -94,7 +93,7 @@ export default class UserCenterMchntListEditPhone extends wepy.page {
         tapInputPhone(e){
             this.shopPhone =  e.detail.value
         },
-        editPhone(){
+        async editPhone(){
 
             if(!this.checkIsPhone(this.shopPhone)){
                 wx.showToast({
@@ -107,7 +106,7 @@ export default class UserCenterMchntListEditPhone extends wepy.page {
                 title: '请求中...',
             })
             wx.showNavigationBarLoading()
-            req.post(baseUrl+"shopInfo/updateShopInfo",{
+            await http.post("shopInfo/updateShopInfo",{
                 shopPhone: this.shopPhone
             }).then(res => {
                 wx.hideLoading()
