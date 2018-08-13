@@ -24,8 +24,6 @@
  *goW 即 goWhere  要去哪里？
  */
 import wepy from 'wepy'
-import req from '@/network'
-
 export default class PostLink extends wepy.component {
     
     props = {

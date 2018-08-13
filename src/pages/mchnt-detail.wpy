@@ -310,9 +310,8 @@
 
 <script>
 import wepy from 'wepy'
-import req from '@/network'
-import { baseUrl } from '@/config/index'
-
+import Tips from '@/utils/Tips'
+import http from '@/utils/Http'
 export default class MchntDetail extends wepy.page {
 
      config = {
@@ -332,11 +331,12 @@ export default class MchntDetail extends wepy.page {
         currentIndex: '0'
     }
 
-    onLoad(params, data) {
+    async onLoad(params, data) {
+        
         // 如果从分享进入则调
         if(data.preload === undefined) {
             this.comeShare = true
-            req.get(baseUrl+'shop/shopInfo',{shopInfoId:params.shopInfoId}).then(res =>{
+           await http.get('shop/shopInfo',{shopInfoId:params.shopInfoId}).then(res =>{
                 if(res.code === 0) {
                     this.shopInfo = res.data.shopInfo
                     this.swiperConfig.list = this.shopInfo.bannerPicture.map(res=>res.replace('com/','com/S'))
@@ -354,8 +354,10 @@ export default class MchntDetail extends wepy.page {
             this.shopInfo = data.preload.shopInfo
             this.swiperConfig.list = this.shopInfo.bannerPicture.map(res=>res.replace('com/','com/S'))
         }
-        if(this.shopInfo !== null && this.comeShare)
-            req.post(baseUrl+'shopInfo/views?shopInfoId='+this.shopInfo.shopInfoId).then(res =>{})
+        if(this.shopInfo !== null && this.comeShare){
+            await http.post('shopInfo/views?shopInfoId='+this.shopInfo.shopInfoId).then(res =>{})
+        }
+        
     }
 
     onShareAppMessage(res){
@@ -373,7 +375,6 @@ export default class MchntDetail extends wepy.page {
             })
         },
         viewGallery(index) {
-            console.log(index)
             wx.previewImage({
                 // 切换大图
                 current: this.shopInfo.galleryPicture[index].replace('com/','com/S'),

@@ -9,16 +9,23 @@ export default class auth extends base {
    * 一键登录
    */
   static async login() {
-  
+    console.log("login ....")
     const third_session = this.getConfig('third_session'); // 获取本地存储的third_session
+
     if (third_session != null && third_session != '') {
+
+      console.log("检查服务器是否存在（过期)...")
       //检查服务器是否存在（过期)
       await this.checkLoginCode(third_session).then(res=>{
         if(res.code !== 0){
+          console.log("过期 重新登录认证中...")
           this.doLogin()
+        }else{
+          console.log("未过期...")
         }
       }) 
     } else {
+      console.log("未登录...")
       await this.doLogin();
     }
   }
@@ -85,32 +92,5 @@ export default class auth extends base {
     console.info(`[auth] clear auth config [${key}]`);
     wepy.$instance.globalData.auth[key] = null;
     await wepy.removeStorage({key: key});
-  }
-
-
-   /**
-   * 获取用户信息
-   */
-  static async user(param = {block: false, redirect: false}, userInfo) {
-    try {
-      // 检查
-      if (this.hasConfig('user')) {
-        return true;
-      }
-      // 重新登录
-      await this.doLogin();
-      // 获取用户信息
-      const rawUser = userInfo != null ? userInfo : await wepy.getUserInfo();
-      // 保存登录信息
-      await this.setConfig('user', rawUser);
-      wepy.$instance.globalData.userInfo = rawUser
-      return true;
-    } catch (error) {
-      console.error('[auth] 授权失败', error);
-      wx.navigateTo({
-        url: './login'
-      })
-      return false;
-    }
   }
 }

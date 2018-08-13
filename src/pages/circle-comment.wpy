@@ -94,7 +94,8 @@ export default class CircleComment extends wepy.page {
       articleId: null,
       location: "信阳市（默认）",
       anonymous: '0',
-      content: ""
+      content: "",
+      userInfo: null
     }
 
     onLoad(params, data) {
@@ -119,8 +120,8 @@ export default class CircleComment extends wepy.page {
       }
 
       if(this.anonymous === '0') {
-        params.nickname = this.$parent.globalData.userInfo.nickName
-        params.avatar = this.$parent.globalData.userInfo.avatarUrl
+        params.nickname = this.userInfo.nickName
+        params.avatar = this.userInfo.avatarUrl
       }
 
       if(this.articleId === null) {
@@ -155,12 +156,18 @@ export default class CircleComment extends wepy.page {
 
     methods = {
       async commentArticle({ detail }){
-
+        // 登录认证
+        const third_session = auth.getConfig('third_session'); // 获取本地存储的third_session
         if (detail.rawData) {
-          const result = await auth.user({block: true, redirect: true}, detail)
-          if (!result) return
-          Tips.success('授权成功')
-          await this.commentArticle()
+          this.userInfo = detail.userInfo
+          this.$apply()
+          auth.checkLoginCode(third_session).then(res=>{
+            if(res.code === 0){
+              this.commentArticle()
+            }else{
+              Tips.error('授权错误！')
+            }
+          })
         }else{
           Tips.error('授权失败')
         }

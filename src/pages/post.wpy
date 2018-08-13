@@ -147,7 +147,7 @@ export default class Post extends wepy.page {
       
     }
 
-   async writeArticle(){
+    writeArticle(){
 
       if(this.content.length <= 6) {
         wx.showToast({
@@ -165,8 +165,9 @@ export default class Post extends wepy.page {
       }
 
       if(this.anonymous === '0') {
-        params.nickname = wepy.$instance.globalData.userInfo.nickName
-        params.avatar = wepy.$instance.globalData.userInfo.avatarUrl
+
+        params.nickname =  this.userInfo.nickName
+        params.avatar = this.userInfo.avatarUrl
       }
       wx.showLoading({
         title: '正在发布中...',
@@ -181,7 +182,7 @@ export default class Post extends wepy.page {
             name: 'file',
             header: {
               'content-type':'multipart/form-data',
-              'xy365_3rd_session': wepy.$instance.globalData.auth.third_session
+              'Third-Session': wepy.$instance.globalData.auth.third_session
             }, // 设置请求的 header
             success(res){
               uploadImage.push(res.data)
@@ -211,7 +212,7 @@ export default class Post extends wepy.page {
           })
         }
       }else{
-        await http.post("article/write",params).then(res => {
+        http.post("article/write",params).then(res => {
           wx.hideLoading()
           if(res.code === 0){
             // 返回刷新的标志
@@ -250,12 +251,22 @@ export default class Post extends wepy.page {
       bindTextAreaBlur(e){
         this.content = e.detail.value
       },
-      async postArticle({ detail }){
+      postArticle({ detail }){
+        
+        // 登录认证
+        const third_session = auth.getConfig('third_session'); // 获取本地存储的third_session
+
         if (detail.rawData) {
-          const result = await auth.user({block: true, redirect: true}, detail)
-          if (!result) return
-          Tips.success('授权成功')
-          this.writeArticle()
+          this.userInfo = detail.userInfo
+          this.$apply()
+          auth.checkLoginCode(third_session).then(res=>{
+            if(res.code === 0){
+              this.writeArticle()
+            }else{
+              Tips.error('授权错误！')
+            }
+          })
+          
         }else{
           Tips.error('授权失败')
         }

@@ -34,11 +34,8 @@
 </template>
 
 <script>
-  import wepy from 'wepy'
-  import Toast from 'wepy-com-toast'
-  import req from '@/network'
-
-  export default class PostResult extends wepy.page {
+import wepy from 'wepy'
+export default class PostResult extends wepy.page {
 
     data = {
 
@@ -54,11 +51,6 @@
       
     }
 
-    
-
-    components = {
-      toast: Toast
-    }
 
   }
 </script>

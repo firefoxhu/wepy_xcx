@@ -839,8 +839,14 @@ export default class MchntEntry extends wepy.page {
             }
 
             if (detail.rawData) {
-                const result = await auth.user({block: true, redirect: true}, detail)
-                if (!result) return
+               auth.checkLoginCode(third_session).then(res=>{
+                    if(res.code === 0){
+                        this.writeArticle()
+                    }else{
+                        Tips.error('授权错误！')
+                        return
+                    }
+                })
             }else{
                 return
             }
@@ -860,7 +866,7 @@ export default class MchntEntry extends wepy.page {
                     name: 'file',
                     header: {
                     'content-type':'multipart/form-data',
-                    'xy365_3rd_session': wepy.$instance.globalData.auth.third_session
+                    'Third-Session': wepy.$instance.globalData.auth.third_session
                     }, // 设置请求的 header
                     success(res){
                         uploadImage.push(res.data)

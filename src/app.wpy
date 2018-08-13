@@ -94,6 +94,7 @@ export default class extends wepy.app {
   }
 
   globalData = {
+    //baseUrl: 'http://192.168.3.12:8080/',
     baseUrl: 'https://www.luosen365.com/',
     userInfo: null,
     auth:{
@@ -130,7 +131,7 @@ export default class extends wepy.app {
       success (p) {
         return p.data;
       }
-    });
+    })
   }
 
   /**
@@ -140,7 +141,7 @@ export default class extends wepy.app {
     const third_session = wepy.$instance.globalData.auth.third_session;
     const header = {};
     if (third_session) {
-      header['xy365_3rd_session'] = third_session;
+      header['Third-Session'] = third_session;
     }
     return header;
   }
