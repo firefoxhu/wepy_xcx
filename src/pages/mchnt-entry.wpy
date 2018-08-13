@@ -837,11 +837,12 @@ export default class MchntEntry extends wepy.page {
                 })
                 return
             }
-
+            // 登录认证
+            const third_session = auth.getConfig('third_session'); // 获取本地存储的third_session
             if (detail.rawData) {
                auth.checkLoginCode(third_session).then(res=>{
                     if(res.code === 0){
-                        this.writeArticle()
+                        
                     }else{
                         Tips.error('授权错误！')
                         return

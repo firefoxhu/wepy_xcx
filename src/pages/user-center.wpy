@@ -215,6 +215,7 @@ export default class UserCenter extends wepy.page {
       http.get("mchnt/binding").then(res => {
         if(res.code === 0){
           this.mchntSetting.text = ''
+          this.mchntSetting.show = false
         }else{
           this.mchntSetting.text = '点击入住商户'
           this.mchntSetting.show = true

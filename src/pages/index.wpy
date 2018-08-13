@@ -145,10 +145,12 @@
       </view>
       
       <view class="sort">
-        <view class="item" @tap.stop="selectSort('{{item}}')" wx:for="{{sortConfig.list}}" wx:key="{{index}}">
-          <image lazy-load="true" class="icon" src="{{item.imgUrl}}" />
-          <text>{{item.title}}</text>
-        </view>
+        <block wx:for="{{sortConfig.list}}" wx:key="{{index}}">
+          <view  @tap.stop="selectSort('{{item}}')" class="item">
+            <image lazy-load="true" class="icon" src="{{item.imgUrl}}" />
+            <text>{{item.title}}</text>
+          </view>
+        </block>
       </view>
     </view>
     <!--

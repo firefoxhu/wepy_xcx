@@ -99,7 +99,7 @@ export default class UserCenterMchntListEditShopface extends wepy.page {
                     name: 'file',
                     header: {
                     'content-type':'multipart/form-data',
-                                  'Third-Session': wepy.$instance.globalData.auth.third_session
+                    'Third-Session': wepy.$instance.globalData.auth.third_session
                     }, // 设置请求的 header
                     success(res){
                         uploadImage.push(res.data)
