@@ -360,7 +360,8 @@ export default class CircleDetail extends wepy.page {
       wx.showNavigationBarLoading()
       await http.get('comment/list',{
         page: ++ this.commentConfig.page.index,
-        size: this.commentConfig.page.size
+        size: this.commentConfig.page.size,
+        articleId: this.article.articleId
       }).then(res => {
         wx.hideNavigationBarLoading()
         if(res.code === 0){

@@ -212,8 +212,8 @@ export default class Index extends wepy.page {
         duration: 500,
         data:{
           list:[
-            'http://luosen365.com/image/20180425/1524639638619.jpg',
-            'http://luosen365.com/image/20180425/1524640019069.jpg',
+            'https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1534320811542&di=dd78d85a30c84b5aab6333ce65fe7a93&imgtype=0&src=http%3A%2F%2Fpic42.huitu.com%2Fres%2F20151208%2F696088_20151208005058148500_1.jpg',
+            'https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1534320811542&di=3ad51afc54de03ac2aa7d13cf4553fea&imgtype=0&src=http%3A%2F%2Fimg.aiimg.com%2Fuploads%2Fallimg%2F160930%2F1-160930220039.jpg',
             'http://luosen365.com/image/20180425/1524639781449.jpg'
           ]
         }

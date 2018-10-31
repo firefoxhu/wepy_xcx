@@ -340,6 +340,7 @@ export default class MchntDetail extends wepy.page {
                 if(res.code === 0) {
                     this.shopInfo = res.data.shopInfo
                     this.swiperConfig.list = this.shopInfo.bannerPicture.map(res=>res.replace('com/','com/S'))
+                    this.$apply()
                 }else{
                     wx.showModal({
                         title: '系统错误提示',

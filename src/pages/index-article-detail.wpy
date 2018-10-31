@@ -280,7 +280,7 @@ export default class IndexArticleDetail extends wepy.page {
                 this.article.fabulous =Number(this.article.fabulous) + 1
 
                 // rquest fabulous +1
-                await req.get("proxy/news/fabulous",{id:this.article.id}).then(res => {
+                await http.get("proxy/news/fabulous",{id:this.article.id}).then(res => {
                     if( res.code === 0){
                         wx.setStorage({
                             key: "F"+this.article.id,
@@ -301,7 +301,7 @@ export default class IndexArticleDetail extends wepy.page {
         // 如果从分享进入则调
         if(data.preload === undefined) {
             this.goIndex = true
-           await req.get('proxy/news/detail',{id:params.id}).then(res =>{
+           await http.get('proxy/news/detail',{id:params.id}).then(res =>{
                 this.initData(res.data)
             })
             return
